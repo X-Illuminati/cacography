@@ -9,6 +9,13 @@ file              | description
 ------------------|------------
 .bash_alias       | Some aliases that I find handy.
 
+### notes
+Random notes/documentation
+
+file                  | description
+----------------------|------------
+linux_array_setup.txt | Some old notes from when mdadm was less forgiving. Also has some newer notes mixed in, so it might still be useful.
+
 ### bin
 Various scripts that need to be in the $PATH.
 

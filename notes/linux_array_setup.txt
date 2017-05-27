@@ -1,0 +1,214 @@
+#
+# First, partition the disks:
+#
+
+# Tool: fdisk
+# Commands:
+# g          new GPT disklabel
+#   n        new partition
+#     1      partition 1
+#     2048   default start
+#     *      leave about .1-1% of the disk free
+#   t        change partition type
+#     21     Linux raid
+#   x        expert mode
+#     n      change partition name
+#       *    Set name like "MD1 Member 01"
+#     r      return to main menu
+#   w        write partition table and exit
+fdisk /dev/sdb -t gpt
+
+#-or-
+# Tool: parted
+# Commands:
+# unit B               Change units to bytes
+# mklabel gpt          Make a new GPT label
+# mkpart primary * *   Create a primary partition *use multiple of 4096 for start and 4096-1 for end
+#                      E.G. 4194304 4000386916351
+parted /dev/sdd
+
+#
+# Second, create the array:
+#
+
+# Tool: mdadm
+# Parameters:
+# -C /dev/md2   create md device 2
+# -n 4          4 active devices / use 5 for new arrays
+# -x 0          0 spare devices
+# -c 1024       chunk size 1024k / use 4096 for new arrays
+# -l 5          specify raid5 striping / use 6 fornew arrays
+# <devices>     the 4/5 devices that will make up the array
+mdadm -C /dev/md4 -n 4 -x 0 -c 1024 -l raid5 /dev/sdi1 /dev/sdj1 /dev/sdk1 /dev/sdl1
+mdadm -C /dev/md5 -n 5 -x 0 -c 4096 -l raid6 /dev/sdb1 /dev/sdc1 /dev/sdd1 /dev/sde1 /dev/sdf1
+mdadm -C /dev/md7 -n 5 -x 0 -c 4096 -l raid6 /dev/sdg1 /dev/sdh1 /dev/sdi1 /dev/sdj1 /dev/sdk1
+
+#
+# Step 2.5: partition the virtual drive?
+#
+   TBD
+
+#
+# Third, format the virtual drive:
+#
+
+# Tool: mke2fs
+# Parameters:
+# -t ext4               specify ext4 FS
+# -T                    specify behavioral types
+#    ext4,              turns most FS features on
+#    largefile4         sets a high bytes/inode ratio
+# -m 0                  don't reserve any blocks for the superuser
+# -L <label>            set volume label
+# -E                    extended features
+#    stride=256,        matches 1024k chunk size / use 1024 for new arrays
+#    stripe-width=768   stride*3 for the 3 non-parity drives in the array
+# <device>              the md device to format
+mke2fs -t ext4 -T ext4,largefile4 -m 0 -L Serve5 -E stride=256,stripe-width=768 /dev/md4
+mke2fs -t ext4 -T ext4,largefile4 -m 0 -L Serve6 /dev/md5
+mke2fs -t ext4 -T ext4,largefile4 -m 0 -L MD7 -E lazy_itable_init=0,lazy_journal_init=0 /dev/md7
+#stride/stripe now get figured out automatically
+
+
+#
+# Finally, add the appropriate line items to config files.
+#
+
+# /etc/mdadm.conf# Tool: mdadm and pico (or >> /etc/mdadm.conf)
+# Remember to remove the extra "spares=1" line.
+# It is only there during the initial sync of a raid5.
+mdadm --detail --scan
+
+
+# /etc/fstab
+# Tool: pico, nano
+sudo nano /etc/fstab
+# e.g.:
+UUID=71f0a188-23cd-44b0-95f8-2888de387ab9 /srv/md7 ext4 nofail,ro,nodev,nosuid,relatime,acl 0 3
+
+# /etc/samba/smb.conf
+# Tool: swat (or pico)
+
+
+#
+# Extra: Copy files from old array
+#
+sudo mount -a
+sudo mount -o remount,rw /dev/md7
+sudo nice -n 5 rsync -aHAX --info=progress2 /srv/md5/ /srv/md7/
+
+
+#
+# Notes
+#
+
+
+# Apparently, fdisk-ing the device is recommended over using the raw device in the MD array.
+# Perhaps only to prevent extraneous warnings from mount/mtab/fstab,
+# but it probably also helps with auto-detecting raid members.
+# Also, partitions can be made several % smaller than the whole disk,
+# which will allow you to add a disk of a different size later and it has a better chance of being compatible.
+# Probably a good idea to change other arrays to 99% of disk capacity instead of 90%.
+# For 2TB drives I am going for 99.9% of capacity.
+# For 4TB drives I am going for 99.99% of capacity.
+# For 8TB drives I am going for 99.99% of capacity.
+#
+#
+# I added a swap partition to /dev/md3
+# a swap file might have been better/easier than a swap partition...
+#
+# Tool: fdisk
+# Commands:
+# n         new partition
+#    p      primary partition
+#       1   partition 1
+#       1   start cylinder = 1
+#       *   *use end cylinder = max - (16G)
+#    p      primary partition
+#       2   partition 2
+#       *   *use first available
+#       *   *use end cylinder
+# t         change partition type
+#    2      partition 2
+#       82  Linux swap
+# w         write partition table and exit
+#
+# Tool: mke2fs
+# Parameters:
+# -t ext4               specify ext4 FS
+# -T                    specify behavioral types
+#    ext4,              turns most FS features on
+#    largefile4         sets a high bytes/inode ratio
+# -m 0                  don't reserve any blocks for the superuser
+# -L <label>            set volume label
+# -E                    extended features
+#    stride=256,        matches 1024k chunk size
+#    stripe-width=768   stride*3 for the 3 non-parity drives in the array
+# <device>              the md device to format
+mke2fs -t ext4 -T ext4,largefile4 -m 0 -L Serve4 -E stride=256,stripe-width=768 /dev/md3p1
+#
+# Tool: mkswap
+# Parameters:
+# -v1          specify new swap style (needed for > 128 MB)
+# -L <label>   specify a swap label (probably useless...)
+# <device>     the disk partition to set up
+mkswap -v1 -L Serve4Swap /dev/md3p2
+#
+# result: Setting up swapspace version 1, size = 16777212 KiB
+#         LABEL=Serve4Swap, UUID=fc0b36e6-00c9-479d-bd20-ef136797dee9
+#
+#
+# Arrays created left-symetric with v.90 metadata by default.
+#
+# Array lines from mdadm.conf:
+# DEVICE /dev/sda /dev/sdb /dev/sdc /dev/sdd
+# ARRAY /dev/md0 level=raid5 num-devices=4 UUID=0c78ff16:392745d9:fb3c363a:6c0b133e
+# DEVICE /dev/sde1 /dev/sdf1 /dev/sdg1 /dev/sdh1
+# ARRAY /dev/md1 level=raid5 num-devices=4 UUID=886830e3:8bf3ad0e:983cf3ab:544c12fc
+# DEVICE /dev/sdi1 /dev/sdj1 /dev/sdk1 /dev/sdl1
+# ARRAY /dev/md2 level=raid5 num-devices=4 UUID=62ecfaea:f793a41e:5e9f17a2:51cc4d07
+# DEVICE /dev/sdm1 /dev/sdn1 /dev/sdo1 /dev/sdp1
+# ARRAY /dev/md3 level=raid5 num-devices=4 UUID=fe4d68ad:5900d6bf:822637e3:3690d3e2
+#
+# Lines from fstab:
+# /dev/md0         /mnt/Serve1      ext4        noexec,rw,noatime         0   3
+# /dev/md1         /mnt/Serve2      ext4        noexec,rw,noatime         0   3
+# /dev/md2         /mnt/Serve3      ext4        noexec,rw,noatime         0   3
+# /dev/md3p1       /mnt/Serve4      ext4        noexec,rw,noatime         0   3
+# /dev/md3p2       swap             swap        noatime,pri=1             0   0
+#
+# Lines from smb.conf
+#
+# [Serve1]
+#         comment = Serve1
+#         path = /mnt/Serve1
+#         read only = No
+#         guest ok = Yes
+# 
+# [Serve2]
+#         comment = Serve2
+#         path = /mnt/Serve2
+#         read only = No
+#         guest ok = Yes
+# 
+# [Serve3]
+#         comment = Serve3
+#         path = /mnt/Serve3
+#         read only = No
+#         guest ok = Yes
+# 
+# [Serve4]
+#         comment = Serve4
+#         path = /mnt/Serve4
+#         read only = No
+#         guest ok = Yes
+#
+
+
+
+#
+# TODO
+#
+# Specify homehost? This is included in the superblock and makes up part of the UUID.
+# Hostname is probably "crushinator".
+#
