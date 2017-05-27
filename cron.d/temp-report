@@ -1,0 +1,3 @@
+# Dump a daily temperature sensor report
+REPORTDIR=/var/log/reports/temp/
+@daily root /usr/local/bin/dumptemps.sh --since=yesterday --until=today > $REPORTDIR/$(/usr/bin/date -I --date=yesterday).csv

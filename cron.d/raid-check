@@ -1,0 +1,6 @@
+# Run system wide raid-check once a week on Sunday at 1am by default
+#0 1 * * Sun root /usr/sbin/raid-check
+#0 1 2 4,8,12 * root SKIP_DEVS=md6 /usr/sbin/raid-check
+#0 1 2 2,6,10 * root SKIP_DEVS=md5 /usr/sbin/raid-check
+0 1 2 2,6,10 * root SKIP_DEVS="md5 md6" /usr/sbin/raid-check
+0 1 2 4,8,12 * root SKIP_DEVS="md6 md7" /usr/sbin/raid-check

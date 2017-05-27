@@ -1,0 +1,70 @@
+#!/bin/sh
+
+alias ll='ls -al'
+alias rgrep='grep -R --color'
+alias gr='grep -RIn --color'
+alias livestreamer='python3-livestreamer --no-version-check'
+alias less='less -S'
+alias open='xdg-open'
+
+youtube_getvid()
+{
+ #match http[s]://[www.]youtube.com/watch?v=<video>
+ /usr/bin/grep -q -E '^https?://(www\.)?youtube\.com/watch\?.*v=[[:alnum:]_-]{11}' <<< "$1" && {
+   echo $1 | /usr/bin/sed -nre 's/^.*((\?v=)|(&v=))([[:alnum:]_-]{11}).*$/\4/p'
+ } || {
+  #match http[s]://youtu.be/<video>
+  /usr/bin/grep -q -E '^https?://(www\.)?youtu\.be/[[:alnum:]_-]{11}' <<< "$1" && {
+   echo $1 | /usr/bin/sed -nre 's/^.*\/([[:alnum:]_-]{11}).*$/\1/p'
+  }
+ }
+}
+
+ydl()
+{
+	local vid
+	local vidpath
+	vid="$(youtube_getvid "$1")"
+	[ -n "$vid" ] || return 1
+	[ -e "$HOME/Videos/$vid.mp4" ] && echo "$vid OK" && return 0
+	[ -e "$HOME/Videos2/$vid.mp4" ] && echo "$vid OK" && return 0
+
+	findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
+		vidpath="$HOME/Videos2"
+	}
+	findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
+		vidpath="$HOME/Videos"
+	}
+
+	python3-livestreamer --no-version-check "$1" best -o "${vidpath}/${vid}.mp4"
+}
+
+ypb()
+{
+	local vid
+	vid="$(youtube_getvid "$1")"
+	[ -n "$vid" ] || return 1
+	[ -e "$HOME/Videos/$vid.mp4" -o -e "$HOME/Videos2/$vid.mp4" ] || return 1 
+	[ -e "$HOME/Videos/$vid.mp4" ] && \
+		xdg-open "$HOME/Videos/$vid.mp4"
+	[ -e "$HOME/Videos2/$vid.mp4" ] && \
+		xdg-open "$HOME/Videos2/$vid.mp4"
+	return 0
+}
+
+ycu()
+{
+	local vid
+	vid="$(youtube_getvid "$1")"
+	[ -n "$vid" ] || return 1
+	[ -e "$HOME/Videos/$vid.mp4" ] && \
+		rm -f "$HOME/Videos/$vid.mp4" && echo "rm Videos/$vid"
+	[ -e "$HOME/Videos2/$vid.mp4" ] && \
+		rm -f "$HOME/Videos2/$vid.mp4" && echo "rm Videos2/$vid"
+	return 0
+}
+
+tone()
+{
+	speaker-test -r48000 -FS32_LE -c2 -p 10000 -t sine -l3
+}
