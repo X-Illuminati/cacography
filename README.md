@@ -19,12 +19,13 @@ linux_array_setup.txt | Some old notes from when mdadm was less forgiving. Also 
 ### bin
 Various scripts that need to be in the $PATH.
 
-file              | description
-------------------|------------
-dumptemps.sh      | Script to extract temperature information from hddtemp journalctl logs.
-folder-compare.sh | Script to compare a folder to its backup using Beyond Compare and generate a report. I don't think this works very well since I haven't used it recently.
-uri-open.sh       | An extensible bash script that looks at the URI passed in $1 and chooses a sensible browser/application to open it.
-raid-check        | Modified version of Fedora's mdadm-raid-check that better supports only checking one raid array at a time.
+file                | description
+--------------------|------------
+dumptemps.sh        | Script to extract temperature information from hddtemp journalctl logs.
+folder-compare.sh   | Script to compare a folder to its backup using Beyond Compare and generate a report. I don't think this works very well since I haven't used it recently.
+uri-open.sh         | An extensible bash script that looks at the URI passed in $1 and chooses a sensible browser/application to open it.
+raid-check          | Modified version of Fedora's mdadm-raid-check that better supports only checking one raid array at a time.
+mdadm-syslog-events | Modified syslog script for mdadm that sends out notifications using kdialog when array status changes (goes in /usr/sbin).
 
 ### cron.d
 Various cron jobs.
@@ -41,6 +42,7 @@ Various config files that belong somewhere in /etc.
 file       | description
 -----------|------------
 raid-check | Modified configuration for the raid-check script to better support only checking one raid array at a time.
+mdadm.conf | Configuration for mdadm to specify array setup and notification script.
 
 ## TODO
 Need to add some sort of install.sh to copy all of these to sensible locations.
