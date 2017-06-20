@@ -19,6 +19,20 @@
 fdisk /dev/sdb -t gpt
 
 #-or-
+# Tool: gdisk
+# Commands:
+# o        new GPT disklabel
+# n        new partition
+#   1      partition 1
+#   2048   default start
+#   *      leave about .1-1% of the disk free
+#   fd00   Linux Raid type
+# c        change partition name
+#   *      Set name like "MD1 Member 01"
+# w        write partition table and exit
+gdisk /dev/sdb
+
+#-or-
 # Tool: parted
 # Commands:
 # unit B               Change units to bytes
@@ -96,6 +110,39 @@ UUID=71f0a188-23cd-44b0-95f8-2888de387ab9 /srv/md7 ext4 nofail,ro,nodev,nosuid,r
 sudo mount -a
 sudo mount -o remount,rw /dev/md7
 sudo nice -n 5 rsync -aHAX --info=progress2 /srv/md5/ /srv/md7/
+
+
+
+#
+# Extra: Add drives to an array
+#
+# Step 0: unmount the filesystem
+sudo umount /dev/md5
+# Step 1: collect information about existing array
+sudo mdadm --detail /dev/md5
+sudo dumpe2fs -h /dev/md5
+sudo gdisk -l /dev/md5
+sudo gdisk -l /dev/sda
+# Step 2: partition the new disks
+gdisk /dev/sdl #make same as member disk sda above
+# Step 3: add the devices to the array (example 5 -> 10)
+sudo mdadm --grow /dev/md5 -n 10 --add /dev/sdl1 /dev/sdm1 /dev/sdn1 \
+  /dev/sdo1 /dev/sdp1 --backup-file=/srv/md7/SCRATCH/md5-reshape-backup
+#mdadm: Need to backup 98304K of critical section..
+# Step 4: change stripe width
+# e.g. from 3072 - > 8192?
+sudo tune2fs /dev/md5 -E stripe_width=8192
+# Step 5: enable the 64bit FS feature
+# resize offline is probably more likely to work
+# unfortunately, the FS will probably need to be created
+# with the 64bit feature for the resize to be successful
+# v1.43 of resizefs supports enabling this feature
+sudo umount /dev/md5
+sudo resize2fs -b -p dev/md5
+# Step 6: resize the filesystem
+sudo resize2fs -p /dev/md5
+sudo e2fsck -f /dev/md5
+
 
 
 #
@@ -206,9 +253,3 @@ mkswap -v1 -L Serve4Swap /dev/md3p2
 
 
 
-#
-# TODO
-#
-# Specify homehost? This is included in the superblock and makes up part of the UUID.
-# Hostname is probably "crushinator".
-#
