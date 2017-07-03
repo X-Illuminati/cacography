@@ -43,6 +43,7 @@ file       | description
 -----------|------------
 raid-check | Modified configuration for the raid-check script to better support only checking one raid array at a time.
 mdadm.conf | Configuration for mdadm to specify array setup and notification script.
+smb.conf   | Confirgation for Samba.
 
 ## TODO
 Need to add some sort of install.sh to copy all of these to sensible locations.
