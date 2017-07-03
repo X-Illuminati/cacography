@@ -2,6 +2,16 @@
 Various scripts, .bash_alias, etc. Probably only useful to me.
 
 ## Contents
+
+### root-level
+Project-related files
+
+file      | description
+----------|------------
+README.md | This file.
+LICENSE   | GPLv3 - not suitable for everything, but seemed like a reasonable default
+update.sh | Script to compare files in the filesystem and update the repository if they differ
+
 ### home
 Various config files that belong somewhere in ~/.
 
