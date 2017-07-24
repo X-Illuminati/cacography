@@ -36,6 +36,7 @@ folder-compare.sh   | Script to compare a folder to its backup using Beyond Comp
 uri-open.sh         | An extensible bash script that looks at the URI passed in $1 and chooses a sensible browser/application to open it.
 raid-check          | Modified version of Fedora's mdadm-raid-check that better supports only checking one raid array at a time.
 mdadm-syslog-events | Modified syslog script for mdadm that sends out notifications using kdialog when array status changes (goes in /usr/sbin).
+notify-all.sh       | Script to (attempt) discover all dbus-session busses and notify-send to each of them.
 
 ### cron.d
 Various cron jobs.
