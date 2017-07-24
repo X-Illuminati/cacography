@@ -14,9 +14,9 @@ facility="kern"
 tag="mdmonitor"
 
 case x"${event}" in
-    xFail*) priority="error" ;;
-    xTest*) priority="debug" ;;
-    x*)     priority="info"  ;;
+    xFail*) priority="error" ; urgency="critical" ;;
+    xTest*) priority="debug" ; urgency="low" ;;
+    x*)     priority="info" ; urgency="normal"  ;;
 esac
 
 msg="${event} event on ${dev}"
@@ -24,13 +24,5 @@ if [ x"${disc}" != x ]; then
      msg="${msg}, related to disc ${disc}"
 fi
 
-#/usr/bin/wall "${tag}: ${msg}"
-logger -t "${tag}" -p "${facility}.${priority}" -- "${msg}"
-
-for i in $(pgrep knotify4); do 
-     usernames="${usernames} $(ps -p ${i} -o user= )"
-done
-export DISPLAY=:0
-for u in $usernames; do
-     sudo -u "${u}" kdialog --title "${tag}" --passivepopup "${msg}"
-done
+logger -t "${tag}" -p "${facility}.${priority}" -- "${msg} asdf"
+/usr/local/sbin/notify-all.sh -t 0 -u "${urgency}" -a "${tag}" "${tag}" "${msg}"
