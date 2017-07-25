@@ -51,11 +51,13 @@ temp-report | Uses dumptemps.sh to create a daily temperature report.
 ### etc
 Various config files that belong somewhere in /etc.
 
-file       | description
------------|------------
-raid-check | Modified configuration for the raid-check script to better support only checking one raid array at a time.
-mdadm.conf | Configuration for mdadm to specify array setup and notification script.
-smb.conf   | Confirgation for Samba.
+file        | description
+------------|------------
+raid-check  | Modified configuration for the raid-check script to better support only checking one raid array at a time.
+mdadm.conf  | Configuration for mdadm to specify array setup and notification script.
+smb.conf    | Configuration for Samba.
+ssh_config  | Configuration for ssh clients.
+sshd_config | Configuration for sshd server.
 
 ## TODO
 Need to add some sort of install.sh to copy all of these to sensible locations.
