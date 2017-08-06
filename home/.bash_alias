@@ -68,3 +68,16 @@ tone()
 {
 	speaker-test -r48000 -FS32_LE -c2 -p 10000 -t sine -l3
 }
+
+shorttone()
+{
+gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+}
+
+tripletone(){
+gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+}
