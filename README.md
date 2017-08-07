@@ -38,6 +38,7 @@ uri-open.sh         | An extensible bash script that looks at the URI passed in 
 raid-check          | Modified version of Fedora's mdadm-raid-check that better supports only checking one raid array at a time.
 mdadm-syslog-events | Modified syslog script for mdadm that sends out notifications using kdialog when array status changes (goes in /usr/sbin).
 notify-all.sh       | Script to (attempt) discover all dbus-session busses and notify-send to each of them.
+hardlink-dedup.sh   | Scan directory for identical files and replace them with hardlinks.
 
 ### cron.d
 Various cron jobs.
