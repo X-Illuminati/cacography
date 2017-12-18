@@ -19,6 +19,8 @@ Various config files that belong somewhere in ~/.
 file              | description
 ------------------|------------
 .bash_alias       | Some aliases that I find handy.
+bigclive.sh       | Play a random BigCliveDotCom video
+happy-trees.sh    | Play a random Bob Ross Joy of Painting episode
 
 ### notes
 Random notes/documentation

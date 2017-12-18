@@ -55,6 +55,8 @@ script_main ()
 	# repository. The second is the location of the file in the filesystem.
 	set -- \
 	 "home/.bash_alias"            "$HOME/.bash_alias" \
+	 "home/bigclive.sh"            "$HOME/bigclive.sh" \
+	 "home/happy-trees.sh"         "$HOME/happy-trees.sh" \
 	 "notes/linux_array_setup.txt" "$HOME/linux_array_setup.txt" \
 	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \
