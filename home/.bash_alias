@@ -64,6 +64,11 @@ ycu()
 	return 0
 }
 
+musicstream()
+{
+	youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 9 "$@"
+}
+
 tone()
 {
 	speaker-test -r48000 -FS32_LE -c2 -p 10000 -t sine -l3
