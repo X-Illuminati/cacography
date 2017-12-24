@@ -4,7 +4,7 @@
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="/srv/current/MOVIES/NOT ANIME/Bob Ross/"
-[ -z "$FILTER" ] && FILTER="*.mp4"
+[ -z "$FILTER" ] && FILTER="*.mp4 *.mkv *.webm"
 VIDSTRING="Happy-Trees"
 REPLAYSTRING="Replay"
 
