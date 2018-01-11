@@ -3,7 +3,7 @@
 [ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
-[ -z "$VIDDIR" ] && VIDDIR="/srv/current/MOVIES/NOT ANIME/bigclivedotcom"
+[ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bigclive/"
 [ -z "$FILTER" ] && FILTER="*.mkv *.webm *.mp4"
 VIDSTRING="Big Clive"
 REPLAYSTRING="Big Clive"
@@ -90,7 +90,7 @@ named_vid() {
 
 		filenames="$(echo "$filelist" | grep -s -E "^ *$filenum:" | cut -d ":" -f 2-)"
 		if [ -z "$filenames" ]; then
-			filenames="$(echo "$filelist" | grep -s "$1" | cut -d ":" -f 2-)"
+			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
 		echo "filenames=" "$filenames"
 	fi

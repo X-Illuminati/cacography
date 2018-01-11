@@ -3,7 +3,7 @@
 [ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
-[ -z "$VIDDIR" ] && VIDDIR="/srv/current/MOVIES/NOT ANIME/Bob Ross/"
+[ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bobross/The Joy of Painting/Full Episodes"
 [ -z "$FILTER" ] && FILTER="*.mp4 *.mkv *.webm"
 VIDSTRING="Happy-Trees"
 REPLAYSTRING="Replay"
@@ -87,7 +87,7 @@ named_vid() {
 
 		filenames="$(echo "$filelist" | grep -s -E "^ *$filenum:" | cut -d ":" -f 2-)"
 		if [ -z "$filenames" ]; then
-			filenames="$(echo "$filelist" | grep -s "$1" | cut -d ":" -f 2-)"
+			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
 		echo "filenames=" "$filenames"
 	fi
