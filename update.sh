@@ -26,7 +26,7 @@ compare_files ()
 				echo "Comparing ${BOLD}$2${OFFBOLD} to ${BOLD}$1${OFFBOLD}"
 				"$DIFF" "$2" "$1"
 				compare_files "$1" "$2"
-				break
+				return $?
 				;;
 			c*|C*)
 				echo "Copying ${BOLD}$2${OFFBOLD} to ${BOLD}$1${OFFBOLD}"
