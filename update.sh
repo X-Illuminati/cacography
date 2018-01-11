@@ -59,6 +59,7 @@ script_main ()
 	 "home/.bash_alias"            "$HOME/.bash_alias" \
 	 "home/bigclive.sh"            "$HOME/bigclive.sh" \
 	 "home/happy-trees.sh"         "$HOME/happy-trees.sh" \
+	 "home/randi-scandi.sh"        "$HOME/randi-scandi.sh" \
 	 "notes/linux_array_setup.txt" "$HOME/linux_array_setup.txt" \
 	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \

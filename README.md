@@ -21,6 +21,7 @@ file              | description
 .bash_alias       | Some aliases that I find handy.
 bigclive.sh       | Play a random BigCliveDotCom video
 happy-trees.sh    | Play a random Bob Ross Joy of Painting episode
+randi-scandi.sh   | Play a random QI episode
 
 ### notes
 Random notes/documentation
