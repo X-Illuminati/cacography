@@ -43,6 +43,7 @@ raid-check          | Modified version of Fedora's mdadm-raid-check that better 
 mdadm-syslog-events | Modified syslog script for mdadm that sends out notifications using kdialog when array status changes (goes in /usr/sbin).
 notify-all.sh       | Script to (attempt) discover all dbus-session busses and notify-send to each of them.
 hardlink-dedup.sh   | Scan directory for identical files and replace them with hardlinks.
+repeat.sh           | Repeat a command within specified limits.
 
 ### cron.d
 Various cron jobs.

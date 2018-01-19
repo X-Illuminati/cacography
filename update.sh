@@ -65,6 +65,7 @@ script_main ()
 	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \
 	 "bin/uri-open.sh"             "/usr/local/bin/uri-open.sh" \
+	 "bin/repeat.sh"               "/usr/local/bin/repeat.sh" \
 	 "bin/raid-check"              "/usr/sbin/raid-check" \
 	 "bin/mdadm-syslog-events"     "/usr/sbin/mdadm-syslog-events" \
 	 "bin/notify-all.sh"           "/usr/local/sbin/notify-all.sh" \
