@@ -7,7 +7,7 @@ OFFBOLD="$(tput sgr0)"
 
 access_test ()
 {
-	/usr/bin/dd if="$1" bs=1 count=1 > /dev/null 2>&1
+	/bin/dd if="$1" bs=1 count=1 > /dev/null 2>&1
 }
 
 compare_files ()
@@ -30,7 +30,7 @@ compare_files ()
 				;;
 			c*|C*)
 				echo "Copying ${BOLD}$2${OFFBOLD} to ${BOLD}$1${OFFBOLD}"
-				/usr/bin/cp "$2" "$1"
+				/bin/cp "$2" "$1"
 				return 0
 				;;
 			s*|S*)
