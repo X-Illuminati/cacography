@@ -11,6 +11,17 @@ REPLAYSTRING="Big Clive"
 BOLD="$(tput bold)"
 OFFBOLD="$(tput sgr0)"
 
+#enable presentation mode because systemd-inhibit
+#doesn't work on LXDE...
+if type xfconf-query > /dev/null 2>&1; then
+	PMODE="$(xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode)"
+	restore_pmode() {
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode -s $PMODE
+	}
+	trap 'restore_pmode' EXIT
+	xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/presentation-mode -s true
+fi
+
 #it appears that vlc traps SIGINT but then exit(0)
 #instead of a typical failure code or raise()
 trap 'echo interrupted; exit 130' INT
