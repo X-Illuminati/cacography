@@ -4,7 +4,7 @@
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-qi"
-[ -z "$FILTER" ] && FILTER="*.mp4"
+[ -z "$FILTER" ] && FILTER="*.mp4 *.mkv"
 VIDSTRING="Randi-Scandi"
 REPLAYSTRING="Replay"
 
@@ -75,7 +75,7 @@ named_vid() {
 	if [ -f "$1" ]; then
 		filenames="$1"
 	else
-		filelist="$(ls -1rt $FILTER | nl -s ":")"
+		filelist="$(ls -1 $FILTER | nl -s ":")"
 		if [ "$1" -lt 0 ] 2>/dev/null; then
 			numfiles=$(echo "$filelist" | tail -n1 | cut -d ":" -f 1)
 			# $1 should be a sanely formatted negative number here
@@ -119,7 +119,7 @@ script_main() {
 				return 0
 			;;
 			-l|--list)
-				ls -1rt $FILTER | nl -s ": "
+				ls -1 $FILTER | nl -s ": "
 				return 0
 			;;
 		esac
