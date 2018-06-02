@@ -6,7 +6,7 @@ journalctl --since=today -o short-iso -t hddtemp -t sensord $@ | sed -rne "
   n
   n
   s/(^.{19}).{5}/\1,/
-  s/: /,/g
+  s/[[:space:]]*:[[:space:]]*/,/g
   s/(^.*),(.*),(.*),/\1,\3,/
   s/ C$//
   s/(^.*),temp1,/\1,radeon (C),,/
@@ -16,7 +16,7 @@ journalctl --since=today -o short-iso -t hddtemp -t sensord $@ | sed -rne "
   n
   n
   s/(^.{19}).{5}/\1,/
-  s/: /,/g
+  s/[[:space:]]*:[[:space:]]*/,/g
   s/(^.*),(.*),(.*),/\1,\3,/
   s/ C$//
   s/(^.*),temp1,/\1,k10temp (C),,,/
@@ -25,7 +25,7 @@ journalctl --since=today -o short-iso -t hddtemp -t sensord $@ | sed -rne "
 /SanDisk/d
 \_/dev/sd._{
   s/(^.{19}).{5}/\1,/
-  s/: /,/g
+  s/[[:space:]]*:[[:space:]]*/,/g
   s/(^.*),(.*),(.*),(.*),/\1,\3,\4,/
   s/ C$//
   s_(^.*),(/dev/)(sd.),(.*),_\1,\2\3 \4 (C),!\3!_
