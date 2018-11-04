@@ -71,7 +71,7 @@ play() {
 
 random_vid() {
 	local filename
-	filename=$(ls -1 $FILTER | sort -R | head -1)
+	filename=$(ls -1 $FILTER 2>/dev/null | sort -R | head -1)
 	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	echo "${VIDSTRING}: $filename"
 	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
@@ -89,7 +89,7 @@ named_vid() {
 	if [ -f "$1" ]; then
 		filenames="$1"
 	else
-		filelist="$(ls -1rt $FILTER | nl -s ":")"
+		filelist="$(ls -1rt $FILTER 2>/dev/null | nl -s ":")"
 		if [ "$1" -lt 0 ] 2>/dev/null; then
 			numfiles=$(echo "$filelist" | tail -n1 | cut -d ":" -f 1)
 			# $1 should be a sanely formatted negative number here
@@ -126,11 +126,11 @@ named_vid() {
 update_vids() {
 	local extra_args
 	if [ -z "$1" ]; then
-		extra_args=""
+		extra_args="-r 512k"
 	else
 		extra_args="--playlist-end $1"
 	fi
-	youtube-dl -r 512k -R 5 -i -w --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/user/bigclivedotcom $extra_args
+	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/user/bigclivedotcom $extra_args
 }
 
 script_main() {
@@ -143,7 +143,7 @@ script_main() {
 				return 0
 			;;
 			-l|--list)
-				ls -1rt $FILTER | nl -s ": "
+				ls -1rt $FILTER 2>/dev/null | nl -s ": "
 				return 0
 			;;
 			-u|--update)
