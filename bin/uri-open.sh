@@ -8,7 +8,7 @@
 source ~/.uri-open
 
 # List of test cases to run; keep default test last
-declare -r uri_test_list="podcast youtube default"
+declare -r uri_test_list="podcast youtube peertube default"
 
 # for each test, declare an array struct like this:
 declare -Ar youtube=(
@@ -31,6 +31,13 @@ declare -Ar podcast=(
 	[run]="run_podcast"
 )
 
+declare -Ar peertube=(
+	[testname]="PeerTube"
+	[test]="test_peertube"
+	[runname]="PeerTube"
+	[run]="run_peertube"
+)
+
 # declare the helper functions here:
 function test_youtube ()
 {
@@ -42,33 +49,51 @@ function test_youtube ()
 
 function run_vlc ()
 {
-	/usr/bin/vlc "$1"
+	/usr/bin/vlc -f "$1"
 }
 
-function ydl_cleanup ()
+function ls_cleanup ()
 {
-	kill "$YDL_PID"
-	rm -f "$HOME/Videos${YDL_VID}.temp"
-	rm -f "$HOME/Videos${YDL_VID}.mp4"
+	kill "$LS_PID"
+	rm -f "$HOME/Videos${LS_VID}.temp"
+	rm -f "$HOME/Videos${LS_VID}.mp4"
+}
+
+function run_ls ()
+{
+	[ -d "$HOME/Videos2" ] &&
+		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
+			LS_VID="2/$2"
+		}
+	[ -d "$HOME/Videos" ] &&
+		findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
+			LS_VID="/$2"
+		}
+	trap ls_cleanup EXIT
+
+	python3-livestreamer --no-version-check "$1" best -o "$HOME/Videos${LS_VID}.temp" -f &
+	LS_PID=$!
+	wait $LS_PID
+	mv "$HOME/Videos${LS_VID}.temp" "$HOME/Videos${LS_VID}.mp4"
+	trap EXIT
+	unset LS_PID
+	unset LS_VID
 }
 
 function run_ydl ()
 {
-	findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
-		YDL_VID="2/$2"
-	}
-	findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
-		YDL_VID="/$2"
-	}
-	trap ydl_cleanup EXIT
+	local viddir
+	[ -d "$HOME/Videos2" ] &&
+		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
+			viddir="$HOME/Videos2"
+		}
+	[ -d "$HOME/Videos" ] &&
+		findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
+			viddir="$HOME/Videos"
+		}
 
-	python3-livestreamer --no-version-check "$1" best -o "$HOME/Videos${YDL_VID}.temp" -f &
-	YDL_PID=$!
-	wait $YDL_PID
-	mv "$HOME/Videos${YDL_VID}.temp" "$HOME/Videos${YDL_VID}.mp4"
-	trap EXIT
-	unset YDL_PID
-	unset YDL_VID
+	/usr/bin/flock -n "${viddir}/$2.mp4.part" youtube-dl -o "${viddir}/$2.mp4" "$1"
+	true #at this point we are committed
 }
 
 function run_youtube ()
@@ -91,9 +116,11 @@ function run_youtube ()
   elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
    run_vlc "$HOME/Videos2/$vid.mp4"
   else
-   if [ "$YOUTUBE_FUNC" = "YDL" ]; then
+   if [ "$YOUTUBE_FUNC" = "LS" ]; then
     [ -e "$HOME/Videos/$vid.temp" ] && return 0
     [ -e "$HOME/Videos2/$vid.temp" ] && return 0
+    run_ls "$1" "$vid"
+   elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
     run_ydl "$1" "$vid"
    else
     run_vlc "$1"
@@ -151,6 +178,40 @@ function run_podcast ()
  fi
 }
 
+function test_peertube ()
+{
+ for domain in ${PEERTUBE_DOMAINS}; do
+  #match https://<domain>/videos/watch/<video-uuid>
+  case "$1" in
+   https://${domain}/videos/watch/*)
+    return 0
+    ;;
+  esac
+ done
+ return 1
+}
+
+function run_peertube ()
+{
+ local vid
+
+ case "$1" in
+  #match https://<domain>/videos/watch/<video-uuid>
+  https://*/videos/watch/*)
+   vid=$(echo "$1" | /usr/bin/sed -nre 's_^https://[^/]+/videos/watch/__p')
+   ;;
+ esac
+
+ if [ -n "$vid" ]; then
+  if [ -e "$HOME/Videos/$vid.mp4" ]; then
+   run_vlc "$HOME/Videos/$vid.mp4"
+  elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
+   run_vlc "$HOME/Videos2/$vid.mp4"
+  else
+   run_ydl "$1" "$vid"
+  fi
+ fi
+}
 
 # script main
 # parameters: any number of URI's -- each will be processed in-turn
