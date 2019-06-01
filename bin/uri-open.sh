@@ -140,6 +140,9 @@ function test_podcast ()
 	*.mp3)
 		return 0
 	;;
+	*.mp3\?*)
+		return 0
+	;;
 	esac
 	return 1
 }
@@ -167,7 +170,7 @@ function run_wget ()
 function run_podcast ()
 {
  local mp3
- mp3="$(basename "$1")"
+ mp3="$(basename "${1%\?*}")"
  if [ -n "$mp3" ]; then
   if [ -e "$HOME/Podcasts/$mp3" ]; then
    run_xdg_open "$HOME/Podcasts/$mp3"
