@@ -149,6 +149,7 @@ script_main ()
 	 "home/happy-trees.sh"         "$HOME/happy-trees.sh" \
 	 "home/randi-scandi.sh"        "$HOME/randi-scandi.sh" \
 	 "home/good-news.sh"           "$HOME/good-news.sh" \
+	 "home/.config/screenlayout"   "$XDG_CONFIG_HOME/screenlayout" \
 	 "notes/linux_array_setup.txt" "$HOME/linux_array_setup.txt" \
 	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \

@@ -24,6 +24,13 @@ happy-trees.sh    | Play a random Bob Ross Joy of Painting episode
 randi-scandi.sh   | Play a random QI episode
 good-news.sh      | Play a random Futurama episode
 
+### XDG_CONFIG_DIR
+Various config files that belong in ~/.config/
+
+file              | description
+------------------|------------
+screenlayout      | Scripts for configuring the screen layout using xrandr
+
 ### notes
 Random notes/documentation
 
