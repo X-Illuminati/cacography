@@ -9,9 +9,15 @@ REPORTDIR=${REPORTDIR:-/srv}
 REPORTNAME=${REPORTNAME:-""}
 
 # Don't use the bcompare helper script
-export LD_LIBRARY_PATH="/usr/lib64/beyondcompare/"
-BC_EXEC="/usr/lib64/beyondcompare/BCompare"
-
+if [ -d "/usr/lib64/beyondcompare/" ]; then
+	export LD_LIBRARY_PATH="/usr/lib64/beyondcompare/"
+	BC_EXEC="/usr/lib64/beyondcompare/BCompare"
+elif [ -d "/usr/lib/beyondcompare/" ]; then
+	export LD_LIBRARY_PATH="/usr/lib/beyondcompare/"
+	BC_EXEC="/usr/lib/beyondcompare/BCompare"
+else
+	return 255
+fi
 # Change to the report dir
 cd $REPORTDIR
 umask 027
