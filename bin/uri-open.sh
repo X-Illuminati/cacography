@@ -5,7 +5,12 @@
 # might be better to use python for this...
 
 # source a user config file
-source ~/.uri-open
+[ -z "$XDG_CONFIG_HOME" ] && XDG_CONFIG_HOME="$HOME/.config"
+if [ -f "$XDG_CONFIG_HOME/uri-open" ]; then
+	source "$XDG_CONFIG_HOME/uri-open"
+elif [ -f "$HOME/.uri-open" ]; then
+	source "$HOME/.uri-open"
+fi
 
 # List of test cases to run; keep default test last
 declare -r uri_test_list="podcast youtube peertube default"
