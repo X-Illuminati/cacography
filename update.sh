@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 [ -z "$DIFF" ] && DIFF="/usr/bin/diff"
-
+[ -z "$XDG_CONFIG_HOME" ] && XDG_CONFIG_HOME="$HOME/.config"
 BOLD="$(tput bold)"
 OFFBOLD="$(tput sgr0)"
 
@@ -10,12 +10,98 @@ access_test ()
 	/bin/dd if="$1" bs=1 count=1 > /dev/null 2>&1
 }
 
+compare_links()
+{
+	local l1
+	local l2
+	local i
+
+	[ -h "$1" ] || {
+		echo "${BOLD}$1${OFFBOLD} is not a symbolic link"
+		return 1
+	}
+	l1="$(readlink "$1")"
+
+	if [ -h "$2" ]; then
+		l2="$(readlink "$2")"
+		[ "$l1" = "$l2" ] || {
+			echo "Symbolic links ${BOLD}$1${OFFBOLD} and ${BOLD}$2${OFFBOLD} do not match."
+			echo "${BOLD}$1${OFFBOLD} is a symbolic link to $l1"
+			echo "${BOLD}$2${OFFBOLD} is a symbolic link to $l2"
+			while :; do
+				read -p "[U]pdate [S]kip ? " i
+				case $i in
+				u*|u*)
+					echo "Updating link ${BOLD}$1${OFFBOLD} to ${BOLD}$l2${OFFBOLD}"
+					/bin/ln -sf -T "$l2" "$1"
+					return 0
+					;;
+				s*|S*)
+					return 1
+					;;
+				*)
+					;;
+				esac
+			done
+		}
+	elif [ -f "$2" ]; then
+		echo "File types for ${BOLD}$1${OFFBOLD} and ${BOLD}$2${OFFBOLD} do not match."
+		echo "${BOLD}$1${OFFBOLD} is a symbolic link to $l1"
+		echo "${BOLD}$2${OFFBOLD} is a regular file"
+		while :; do
+			read -p "[R]eplace [S]kip ? " i
+			case $i in
+			r*|R*)
+				/bin/rm "$1"
+				/bin/cp "$2" "$1"
+				return 0
+				;;
+			s*|S*)
+				return 1
+				;;
+			*)
+				;;
+			esac
+		done
+	else
+		if [ -d "$2" ]; then
+			l2="is a directory"
+		elif [ -f "$2" ]; then
+			l2="is a regular file"
+		elif [ -e "$2" ]; then
+			l2="is an unknown type"
+		else
+			l2="does not exist"
+		fi
+		echo "File types for ${BOLD}$1${OFFBOLD} and ${BOLD}$2${OFFBOLD} do not match."
+		echo "${BOLD}$1${OFFBOLD} is a symbolic link to $l1"
+		echo "${BOLD}$2${OFFBOLD} $l2"
+		while :; do
+			read -p "[S]kip ? " i
+			case $i in
+			s*|S*)
+				return 1
+				;;
+			*)
+				;;
+			esac
+		done
+	fi
+}
+
 compare_files ()
 {
+	local i
+
 	access_test "$2" || {
 		echo "Unable to access ${BOLD}$2${OFFBOLD}"
 		return 1
 	}
+
+	if [ -h "$1" ]; then
+		compare_links "$@"
+		return $?
+	fi
 
 	/usr/bin/cmp -s "$1" "$2" || {
 		echo "Files ${BOLD}$1${OFFBOLD} and ${BOLD}$2${OFFBOLD} do not match."
@@ -48,6 +134,8 @@ script_main ()
 	local count
 	local skips
 	local matches
+	local dirlist
+	local fname
 	count=0
 	skips=0
 	matches=0
@@ -79,10 +167,20 @@ script_main ()
 	 "etc/sshd_config"             "/etc/ssh/sshd_config" \
 
 	while [ $# -gt 1 ]; do
-		count=$((count+1))
-		compare_files "$1" "$2" \
-			&& matches=$((matches+1)) \
-			|| skips=$((skips+1))
+		if [ -d "$1" ]; then
+			dirlist="$1/*"
+			for fname in $dirlist; do
+				count=$((count+1))
+				compare_files "$fname" "$2/$(basename "$fname")" \
+					&& matches=$((matches+1)) \
+					|| skips=$((skips+1))
+			done
+		else
+			count=$((count+1))
+			compare_files "$1" "$2" \
+				&& matches=$((matches+1)) \
+				|| skips=$((skips+1))
+		fi
 		shift 2
 	done
 	echo "Compared $count files."
