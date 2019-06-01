@@ -17,6 +17,11 @@ youtube_getvid()
   /usr/bin/grep -q -E '^https?://(www\.)?youtu\.be/[[:alnum:]_-]{11}' <<< "$1" && {
    echo $1 | /usr/bin/sed -nre 's/^.*\/([[:alnum:]_-]{11}).*$/\1/p'
   }
+ } || {
+  #match <video>
+  /usr/bin/grep -q -E '^[[:alnum:]_-]{11}$' <<< "$1" && {
+   echo "$1"
+  }
  }
 }
 
@@ -24,19 +29,27 @@ ydl()
 {
 	local vid
 	local vidpath
-	vid="$(youtube_getvid "$1")"
+	local url
+	url="$1"
+	vid="$(youtube_getvid "$url")"
+	[ "$url" == "$vid" ] && {
+		url="https://youtube.com/watch?v=$vid"
+	}
+
 	[ -n "$vid" ] || return 1
 	[ -e "$HOME/Videos/$vid.mp4" ] && echo "$vid OK" && return 0
 	[ -e "$HOME/Videos2/$vid.mp4" ] && echo "$vid OK" && return 0
 
-	findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
-		vidpath="$HOME/Videos2"
-	}
-	findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
-		vidpath="$HOME/Videos"
-	}
+	[ -d "$HOME/Videos2" ] &&
+		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
+			vidpath="$HOME/Videos2"
+		}
+	[ -d "$HOME/Videos" ] &&
+		findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
+			vidpath="$HOME/Videos"
+		}
 
-	python3-livestreamer --no-version-check "$1" best -o "${vidpath}/${vid}.mp4"
+	python3-livestreamer --no-version-check "$url" best -o "${vidpath}/${vid}.mp4"
 }
 
 ypb()
