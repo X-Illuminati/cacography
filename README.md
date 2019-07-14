@@ -24,19 +24,20 @@ happy-trees.sh    | Play a random Bob Ross Joy of Painting episode
 randi-scandi.sh   | Play a random QI episode
 good-news.sh      | Play a random Futurama episode
 
-### XDG_CONFIG_DIR
-Various config files that belong in ~/.config/
+#### .config
+Various config files that belong in XDG_CONFIG_DIR
 
 file              | description
 ------------------|------------
 screenlayout      | Scripts for configuring the screen layout using xrandr
 
-### XDG_DATA_HOME
-Various config files that belong in ~/.local/
+#### .local
+Various config files that belong in XDG_DATA_HOME
 
 file                 | description
 ---------------------|------------
 file-manager-actions | File-manager right-click actions following DES-EMA spec
+kde-service-menus    | File-manager right-click actions following KDE Desktop Action format
 
 ### notes
 Random notes/documentation

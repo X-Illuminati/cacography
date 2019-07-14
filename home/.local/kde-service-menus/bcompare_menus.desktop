@@ -1,0 +1,28 @@
+[Desktop Entry]
+Name = Beyond Compare File/Folder Comparison
+Type = Service
+ServiceTypes = KonqPopupMenu/Plugin
+MimeType = application/octet-stream;
+X-KDE-ServiceTypes = KonqPopupMenu/Plugin
+Actions = compare_two;select_one;compare_selected
+
+[Desktop Action compare_two]
+Name = Compare Items
+Tooltip = Compare files/folders
+Description = Compare Action - uses Beyond Compare to compare selected files or folders
+Icon = bcompare
+Exec = bcompare %F
+
+[Desktop Action select_one]
+Name = Select for comparison
+Tooltip = Select an item to be compared later
+Description = Compare Action - select file to compare later using Beyond Compare
+Icon = bcompare
+Exec = compare-helper.sh -s %f
+
+[Desktop Action compare_selected]
+Name = Compare to selected
+Tooltip = Compare item to previously selected item
+Description = Compare Action - uses Beyond Compare to compare a file or folder to the file or folder selected previously
+Icon = bcompare
+Exec = compare-helper.sh %f
