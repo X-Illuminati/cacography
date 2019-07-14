@@ -2,6 +2,7 @@
 
 [ -z "$DIFF" ] && DIFF="/usr/bin/diff"
 [ -z "$XDG_CONFIG_HOME" ] && XDG_CONFIG_HOME="$HOME/.config"
+[ -z "$XDG_DATA_HOME" ] && XDG_DATA_HOME="$HOME/.local"
 BOLD="$(tput bold)"
 OFFBOLD="$(tput sgr0)"
 
@@ -150,9 +151,12 @@ script_main ()
 	 "home/randi-scandi.sh"        "$HOME/randi-scandi.sh" \
 	 "home/good-news.sh"           "$HOME/good-news.sh" \
 	 "home/.config/screenlayout"   "$XDG_CONFIG_HOME/screenlayout" \
+	 "home/.local/file-manager-actions/" \
+		"$XDG_DATA_HOME/share/file-manager/actions/" \
 	 "notes/linux_array_setup.txt" "$HOME/linux_array_setup.txt" \
 	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \
+	 "bin/compare-helper.sh"       "/usr/local/bin/compare-helper.sh" \
 	 "bin/uri-open.sh"             "/usr/local/bin/uri-open.sh" \
 	 "bin/repeat.sh"               "/usr/local/bin/repeat.sh" \
 	 "bin/raid-check"              "/usr/sbin/raid-check" \

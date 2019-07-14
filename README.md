@@ -31,6 +31,13 @@ file              | description
 ------------------|------------
 screenlayout      | Scripts for configuring the screen layout using xrandr
 
+### XDG_DATA_HOME
+Various config files that belong in ~/.local/
+
+file                 | description
+---------------------|------------
+file-manager-actions | File-manager right-click actions following DES-EMA spec
+
 ### notes
 Random notes/documentation
 
@@ -45,6 +52,7 @@ file                | description
 --------------------|------------
 dumptemps.sh        | Script to extract temperature information from hddtemp journalctl logs.
 folder-compare.sh   | Script to compare a folder to its backup using Beyond Compare and generate a report. I don't think this works very well since I haven't used it recently.
+compare-helper.sh   | Script to handle right-click actions select-for-compare and compare-to
 uri-open.sh         | An extensible bash script that looks at the URI passed in $1 and chooses a sensible browser/application to open it.
 raid-check          | Modified version of Fedora's mdadm-raid-check that better supports only checking one raid array at a time.
 mdadm-syslog-events | Modified syslog script for mdadm that sends out notifications using kdialog when array status changes (goes in /usr/sbin).

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name = Select %b for comparison
+Tooltip = Select an item to be compared later
+Description = Compare Action - select file to compare later using Beyond Compare
+Icon = bcompare
+SelectionCount = =1
+Schemes = file; smb;
+TryExec = bcompare
+Profiles = select_one
+
+[X-Action-Profile select_one]
+Name = select_for_compare
+Exec = compare-helper.sh -s %f

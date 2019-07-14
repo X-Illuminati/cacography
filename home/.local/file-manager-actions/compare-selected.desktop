@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name = Compare to selected
+Tooltip = Compare item to previously selected item
+Description = Compare Action - uses Beyond Compare to compare a file or folder to the file or folder selected previously
+Icon = bcompare
+SelectionCount = =1
+Schemes = file; smb;
+TryExec = bcompare
+ShowIfTrue = compare-helper.sh -t
+Profiles = compare_selected
+
+[X-Action-Profile compare_selected]
+Name = compare_selected
+Exec = compare-helper.sh %f

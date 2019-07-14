@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name = Compare
+Tooltip = Compare files/folders
+Description = Compare Action - uses Beyond Compare to compare selected files or folders
+Icon = bcompare
+SelectionCount = =2
+Schemes = file; smb;
+TryExec = bcompare
+Profiles = compare_two
+
+[X-Action-Profile compare_two]
+Name = compare_two_objects
+Exec = bcompare %F
