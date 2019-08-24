@@ -6,6 +6,7 @@ alias gr='grep -RIn --color'
 alias livestreamer='python3-livestreamer --no-version-check'
 alias less='less -S'
 alias open='xdg-open'
+alias dd='dd status=progress'
 
 youtube_getvid()
 {
