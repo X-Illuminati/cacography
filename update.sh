@@ -170,7 +170,6 @@ script_main ()
 	 "etc/raid-check"              "/etc/sysconfig/raid-check" \
 	 "etc/mdadm.conf"              "/etc/mdadm.conf" \
 	 "etc/smb.conf"                "/etc/samba/smb.conf" \
-	 "etc/ssh_config"              "/etc/ssh/ssh_config" \
 	 "etc/sshd_config"             "/etc/ssh/sshd_config" \
 
 	while [ $# -gt 1 ]; do
