@@ -161,6 +161,7 @@ script_main ()
 	 "bin/compare-helper.sh"       "/usr/local/bin/compare-helper.sh" \
 	 "bin/uri-open.sh"             "/usr/local/bin/uri-open.sh" \
 	 "bin/repeat.sh"               "/usr/local/bin/repeat.sh" \
+	 "bin/spstart.sh"              "/usr/local/bin/spstart.sh" \
 	 "bin/raid-check"              "/usr/sbin/raid-check" \
 	 "bin/mdadm-syslog-events"     "/usr/sbin/mdadm-syslog-events" \
 	 "bin/notify-all.sh"           "/usr/local/sbin/notify-all.sh" \

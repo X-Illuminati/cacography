@@ -60,6 +60,7 @@ mdadm-syslog-events | Modified syslog script for mdadm that sends out notificati
 notify-all.sh       | Script to (attempt) discover all dbus-session busses and notify-send to each of them.
 hardlink-dedup.sh   | Scan directory for identical files and replace them with hardlinks.
 repeat.sh           | Repeat a command within specified limits.
+spstart.sh          | Script to properly start spacenavd with the quirks of my SpacePilot HP
 
 ### cron.d
 Various cron jobs.
