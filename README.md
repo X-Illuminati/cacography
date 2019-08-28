@@ -30,6 +30,7 @@ Various config files that belong in XDG_CONFIG_DIR
 file              | description
 ------------------|------------
 screenlayout      | Scripts for configuring the screen layout using xrandr
+OpenSCAD          | Configuration for OpenSCAD with all of the SpacePilot button settings
 
 #### .local
 Various config files that belong in XDG_DATA_HOME

@@ -151,6 +151,8 @@ script_main ()
 	 "home/randi-scandi.sh"        "$HOME/randi-scandi.sh" \
 	 "home/good-news.sh"           "$HOME/good-news.sh" \
 	 "home/.config/screenlayout"   "$XDG_CONFIG_HOME/screenlayout" \
+	 "home/.config/OpenSCAD/OpenSCAD.conf" \
+		"$XDG_CONFIG_HOME/OpenSCAD/OpenSCAD.conf" \
 	 "home/.local/file-manager-actions/" \
 		"$XDG_DATA_HOME/share/file-manager/actions/" \
 	 "home/.local/kde-service-menus/" \
