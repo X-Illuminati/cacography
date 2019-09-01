@@ -31,6 +31,7 @@ file              | description
 ------------------|------------
 screenlayout      | Scripts for configuring the screen layout using xrandr
 OpenSCAD          | Configuration for OpenSCAD with all of the SpacePilot button settings
+pianobar          | Configuration files for pianobar
 
 #### .local
 Various config files that belong in XDG_DATA_HOME

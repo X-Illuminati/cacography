@@ -153,6 +153,7 @@ script_main ()
 	 "home/.config/screenlayout"   "$XDG_CONFIG_HOME/screenlayout" \
 	 "home/.config/OpenSCAD/OpenSCAD.conf" \
 		"$XDG_CONFIG_HOME/OpenSCAD/OpenSCAD.conf" \
+	 "home/.config/pianobar"       "$XDG_CONFIG_HOME/pianobar" \
 	 "home/.local/file-manager-actions/" \
 		"$XDG_DATA_HOME/share/file-manager/actions/" \
 	 "home/.local/kde-service-menus/" \
