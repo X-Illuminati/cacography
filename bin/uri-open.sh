@@ -98,6 +98,7 @@ function run_ydl ()
 		}
 
 	/usr/bin/flock -n "${viddir}/$2.mp4.part" youtube-dl -o "${viddir}/$2.mp4" "$1"
+	[ -f "${viddir}/$2.mp4.part" -a ! -s "${viddir}/$2.mp4.part" ] && rm "${viddir}/$2.mp4.part"
 	true #at this point we are committed
 }
 
@@ -118,8 +119,12 @@ function run_youtube ()
  if [ -n "$vid" ]; then
   if [ -e "$HOME/Videos/$vid.mp4" ]; then
    run_vlc "$HOME/Videos/$vid.mp4"
+  elif [ -e "$HOME/Videos/$vid.mkv" ]; then
+   run_vlc "$HOME/Videos/$vid.mkv"
   elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
    run_vlc "$HOME/Videos2/$vid.mp4"
+  elif [ -e "$HOME/Videos2/$vid.mkv" ]; then
+   run_vlc "$HOME/Videos2/$vid.mkv"
   else
    if [ "$YOUTUBE_FUNC" = "LS" ]; then
     [ -e "$HOME/Videos/$vid.temp" ] && return 0
