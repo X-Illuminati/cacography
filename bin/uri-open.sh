@@ -13,7 +13,7 @@ elif [ -f "$HOME/.uri-open" ]; then
 fi
 
 # List of test cases to run; keep default test last
-declare -r uri_test_list="podcast youtube peertube default"
+declare -r uri_test_list="podcast youtube peertube twitch default"
 
 # for each test, declare an array struct like this:
 declare -Ar youtube=(
@@ -41,6 +41,13 @@ declare -Ar peertube=(
 	[test]="test_peertube"
 	[runname]="PeerTube"
 	[run]="run_peertube"
+)
+
+declare -Ar twitch=(
+	[testname]="Twitch.tv"
+	[test]="test_twitch"
+	[runname]="Twitch.tv"
+	[run]="run_twitch"
 )
 
 # declare the helper functions here:
@@ -225,6 +232,46 @@ function run_peertube ()
   fi
  fi
 }
+
+function test_twitch ()
+{
+	#match http[s]://[www.]twitch.tv/videos/<video>
+	#where <video> is [[:digit:]]+
+	/usr/bin/grep -q -E '^https?://(www\.)?twitch\.tv/videos/[[:digit:]]+' <<< "$1"
+}
+
+function run_twitch ()
+{
+ local vid
+
+ #match http[s]://[www.]twitch.tv/videos/<video>
+ /usr/bin/grep -q -E '^https?://(www\.)?twitch\.tv/videos/[[:digit:]]+' <<< "$1" && {
+  vid=$(echo "$1" | /usr/bin/sed -nre 's_^https://[^/]+/videos/__p')
+ }
+
+ if [ -n "$vid" ]; then
+  if [ -e "$HOME/Videos/$vid.mp4" ]; then
+   run_vlc "$HOME/Videos/$vid.mp4"
+  elif [ -e "$HOME/Videos/$vid.mkv" ]; then
+   run_vlc "$HOME/Videos/$vid.mkv"
+  elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
+   run_vlc "$HOME/Videos2/$vid.mp4"
+  elif [ -e "$HOME/Videos2/$vid.mkv" ]; then
+   run_vlc "$HOME/Videos2/$vid.mkv"
+  else
+   if [ "$YOUTUBE_FUNC" = "LS" ]; then
+    [ -e "$HOME/Videos/$vid.temp" ] && return 0
+    [ -e "$HOME/Videos2/$vid.temp" ] && return 0
+    run_ls "$1" "$vid"
+   elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
+    run_ydl "$1" "$vid"
+   else
+    run_vlc "$1"
+   fi
+  fi
+ fi
+}
+
 
 # script main
 # parameters: any number of URI's -- each will be processed in-turn
