@@ -7,6 +7,7 @@ alias livestreamer='python3-livestreamer --no-version-check'
 alias less='less -S'
 alias open='xdg-open'
 alias dd='dd status=progress'
+alias ydesc='youtube-dl --get-description'
 
 youtube_getvid()
 {
@@ -90,13 +91,14 @@ tone()
 
 shorttone()
 {
-gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink
-gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink >/dev/null
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
 }
 
-tripletone(){
-gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink
-gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
-gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
-gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink
+tripletone()
+{
+gst-launch-1.0 audiotestsrc wave=silence num-buffers=32 ! alsasink >/dev/null
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
+gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
 }

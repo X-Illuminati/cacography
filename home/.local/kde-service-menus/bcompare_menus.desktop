@@ -2,7 +2,7 @@
 Name = Beyond Compare File/Folder Comparison
 Type = Service
 ServiceTypes = KonqPopupMenu/Plugin
-MimeType = application/octet-stream;
+MimeType = application/octet-stream;inode/directory
 X-KDE-ServiceTypes = KonqPopupMenu/Plugin
 Actions = compare_two;select_one;compare_selected
 
