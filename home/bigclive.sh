@@ -5,7 +5,7 @@
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bigclive/"
 [ -z "$FILTER" ] && FILTER="*.mkv *.webm *.mp4"
-VIDSTRING="Big Clive"
+VIDSTRING="Things worthy of note"
 REPLAYSTRING="Big Clive"
 
 BOLD="$(tput bold)"
@@ -41,6 +41,7 @@ Options:
   -u, --update Download recent videos
   -U, --full-update
                Download all videos
+  -f, --fetch  Fetch a single video (e.g. if playlist not updated)
 
 Environment Variables:
   VIDDIR     The directory containing the videos
@@ -123,6 +124,10 @@ named_vid() {
 	return $result
 }
 
+fetch_single_vid() {
+	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs $1
+}
+
 update_vids() {
 	local extra_args
 	if [ -z "$1" ]; then
@@ -130,10 +135,14 @@ update_vids() {
 	else
 		extra_args="--playlist-end $1"
 	fi
-	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/user/bigclivedotcom $extra_args
+	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UCtM5z2gkrGRuWd0JQMx76qA $extra_args
+	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UClIzWmVzGPm2zhNT2XZ-Rkw $extra_args
 }
 
 script_main() {
+	local fetch_only_flag
+	fetch_only_flag=0
+
 	if [ $# -eq 0 ]; then
 		random_vid
 	else
@@ -154,10 +163,18 @@ script_main() {
 				update_vids
 				return $?
 			;;
+			-f|--fetch)
+				fetch_only_flag=1
+				shift
+			;;
 		esac
 
 		for i in "$@"; do
-			named_vid "$i" || echo "Playback failed ($?) for $i"
+			if [ 1 -eq $fetch_only_flag ]; then
+				fetch_single_vid "$i" || echo "Fetch failed ($?) for $i"
+			else
+				named_vid "$i" || echo "Playback failed ($?) for $i"
+			fi
 		done
 	fi
 }
