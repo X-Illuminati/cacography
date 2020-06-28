@@ -27,7 +27,7 @@ fi
 trap 'echo interrupted; exit 130' INT
 
 usage() {
-	echo "Usage: $0 [-h|-l|FILE [FILE...]]\
+	echo "Usage: $0 [-h|-l [QUERY]|FILE [FILE...]]\
 
 Play a random video from \$VIDDIR or play FILE if specified.
 
@@ -37,7 +37,7 @@ to count backwards from the end.
 
 Options:
   -h, --help   Display this help text
-  -l, --list   List files in \$VIDDIR
+  -l, --list   List files in \$VIDDIR, optionally matching a query
   -u, --update Download recent videos
   -U, --full-update
                Download all videos
@@ -79,33 +79,46 @@ random_vid() {
 	play "$filename"
 }
 
-named_vid() {
+list_files() {
+	local i
 	local filenames
 	local filelist
 	local filenum
 	local numfiles
-	local result
-	result=0
 
-	if [ -f "$1" ]; then
-		filenames="$1"
+	filelist="$(ls -1rt $FILTER 2>/dev/null | nl -s ": ")"
+
+	if [ $# -eq 0 ]; then
+		echo "$filelist"
 	else
-		filelist="$(ls -1rt $FILTER 2>/dev/null | nl -s ":")"
-		if [ "$1" -lt 0 ] 2>/dev/null; then
-			numfiles=$(echo "$filelist" | tail -n1 | cut -d ":" -f 1)
-			# $1 should be a sanely formatted negative number here
-			filenum=$(($numfiles + 1 + $1))
-		else
-			# $1 is possibly not a number here
-			filenum="$1"
-		fi
+		for i in "$@"; do
+			unset filenames
+			if [ "$i" -lt 0 ] 2>/dev/null; then
+				numfiles=$(echo "$filelist" | tail -n1 | cut -d ":" -f 1)
+				# $1 should be a sanely formatted negative number here
+				filenum=$(($numfiles + 1 + $i))
+			else
+				# $1 is possibly not a number here
+				filenum="$i"
+			fi
 
-		filenames="$(echo "$filelist" | grep -s -E "^ *$filenum:" | cut -d ":" -f 2-)"
-		if [ -z "$filenames" ]; then
-			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
-		fi
-		echo "filenames=" "$filenames"
+
+			filenames="$(echo "$filelist" | grep -s -E "^ *$filenum:")"
+
+			if [ -z "$filenames" ]; then
+				filenames="$(echo "$filelist" | grep -s -i "$i")"
+			fi
+			echo "$filenames"
+		done
 	fi
+}
+
+named_vid() {
+	local i
+	local filenames
+
+	filenames="$(list_files "$@" | cut -d ":" -f 2- | cut -d " " -f 2-)"
+
 	if [ -z "$filenames" ]; then
 		echo "$1: not found"
 		result=1
@@ -116,16 +129,18 @@ named_vid() {
 			echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 			echo "${REPLAYSTRING}: $i"
 			echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
-			play "$i"
-			result=$?
+			play "$i" || echo "Playback failed ($?) for $i"
 		done
 		unset IFS
 	fi
-	return $result
 }
 
 fetch_single_vid() {
-	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs $1
+	local i
+	for i in "$@"; do
+		youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs $i ||
+			echo "Fetch failed ($?) for $i"
+	done
 }
 
 update_vids() {
@@ -152,7 +167,12 @@ script_main() {
 				return 0
 			;;
 			-l|--list)
-				ls -1rt $FILTER 2>/dev/null | nl -s ": "
+				shift
+				if [ $# -eq 0 ]; then
+					list_files
+				else
+					list_files "$@"
+				fi
 				return 0
 			;;
 			-u|--update)
@@ -169,13 +189,11 @@ script_main() {
 			;;
 		esac
 
-		for i in "$@"; do
-			if [ 1 -eq $fetch_only_flag ]; then
-				fetch_single_vid "$i" || echo "Fetch failed ($?) for $i"
-			else
-				named_vid "$i" || echo "Playback failed ($?) for $i"
-			fi
-		done
+		if [ 1 -eq $fetch_only_flag ]; then
+			fetch_single_vid "$@"
+		else
+			named_vid "$@"
+		fi
 	fi
 }
 
