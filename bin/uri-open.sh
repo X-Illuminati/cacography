@@ -95,6 +95,8 @@ function run_ls ()
 function run_ydl ()
 {
 	local viddir
+	local i
+	i=0
 	[ -d "$HOME/Videos2" ] &&
 		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
 			viddir="$HOME/Videos2"
@@ -104,7 +106,10 @@ function run_ydl ()
 			viddir="$HOME/Videos"
 		}
 
-	/usr/bin/flock -n "${viddir}/$2.mp4.part" youtube-dl -o "${viddir}/$2.mp4" "$1"
+	while ! /usr/bin/flock "${viddir}/$2.mp4.part" youtube-dl -o "${viddir}/$2.mp4" "$1"; do
+		i=$((i+1))
+		[ $i -ge ${3:-0} ] && break
+	done
 	[ -f "${viddir}/$2.mp4.part" -a ! -s "${viddir}/$2.mp4.part" ] && rm "${viddir}/$2.mp4.part"
 	true #at this point we are committed
 }
@@ -138,7 +143,7 @@ function run_youtube ()
     [ -e "$HOME/Videos2/$vid.temp" ] && return 0
     run_ls "$1" "$vid"
    elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
-    run_ydl "$1" "$vid"
+    run_ydl "$1" "$vid" ${YDL_RETRIES}
    else
     run_vlc "$1"
    fi
