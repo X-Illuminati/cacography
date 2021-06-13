@@ -1,6 +1,12 @@
 # Include the regular locale-specific compose file
 include "%L"
 
+# Other symbols
+<Multi_key> <bar> <minus>      : "†"   dagger # DAGGER
+<Multi_key> <minus> <bar>      : "†"   dagger # DAGGER
+<Multi_key> <bar> <equal>      : "‡"   doubledagger # DOUBLE DAGGER
+<Multi_key> <equal> <bar>      : "‡"   doubledagger # DOUBLE DAGGER
+
 # GREEK CAPITAL LETTERS
 <Multi_key> <G> <A> : "Α"    U0391    # GREEK CAPITAL LETTER ALPHA
 <Multi_key> <G> <B> : "Β"    U0392    # GREEK CAPITAL LETTER BETA
@@ -56,4 +62,3 @@ include "%L"
 <Multi_key> <g> <c> : "χ"    U03C7    # GREEK SMALL LETTER CHI
 <Multi_key> <g> <y> : "ψ"    U03C8    # GREEK SMALL LETTER PSI
 <Multi_key> <g> <w> : "ω"    U03C9    # GREEK SMALL LETTER OMEGA
-
