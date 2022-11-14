@@ -145,37 +145,39 @@ script_main ()
 	# The first file in each pair is the location of the file in the git
 	# repository. The second is the location of the file in the filesystem.
 	set -- \
-	 "home/.bash_alias"            "$HOME/.bash_alias" \
-	 "home/bigclive.sh"            "$HOME/bigclive.sh" \
-	 "home/happy-trees.sh"         "$HOME/happy-trees.sh" \
-	 "home/randi-scandi.sh"        "$HOME/randi-scandi.sh" \
-	 "home/good-news.sh"           "$HOME/good-news.sh" \
-	 "home/.config/screenlayout"   "$XDG_CONFIG_HOME/screenlayout" \
+	 "home/.bash_alias"               "$HOME/.bash_alias" \
+	 "home/bigclive.sh"               "$HOME/bigclive.sh" \
+	 "home/happy-trees.sh"            "$HOME/happy-trees.sh" \
+	 "home/randi-scandi.sh"           "$HOME/randi-scandi.sh" \
+	 "home/good-news.sh"              "$HOME/good-news.sh" \
+	 "home/swedish_murder_machine.sh" "$HOME/swedish_murder_machine.sh" \
+	 "home/that-pudgy-tummy.sh"       "$HOME/that-pudgy-tummy.sh" \
+	 "home/.config/screenlayout"      "$XDG_CONFIG_HOME/screenlayout" \
 	 "home/.config/OpenSCAD/OpenSCAD.conf" \
 		"$XDG_CONFIG_HOME/OpenSCAD/OpenSCAD.conf" \
-	 "home/.config/pianobar"       "$XDG_CONFIG_HOME/pianobar" \
+	 "home/.config/pianobar"          "$XDG_CONFIG_HOME/pianobar" \
 	 "home/.local/file-manager-actions/" \
 		"$XDG_DATA_HOME/share/file-manager/actions/" \
 	 "home/.local/kde-service-menus/" \
 		"$XDG_DATA_HOME/share/kservices5/ServiceMenus/" \
-	 "notes/linux_array_setup.txt" "$HOME/linux_array_setup.txt" \
-	 "bin/dumptemps.sh"            "/usr/local/bin/dumptemps.sh" \
-	 "bin/folder-compare.sh"       "/usr/local/bin/folder-compare.sh" \
-	 "bin/compare-helper.sh"       "/usr/local/bin/compare-helper.sh" \
-	 "bin/uri-open.sh"             "/usr/local/bin/uri-open.sh" \
-	 "bin/repeat.sh"               "/usr/local/bin/repeat.sh" \
-	 "bin/spstart.sh"              "/usr/local/bin/spstart.sh" \
-	 "bin/raid-check"              "/usr/sbin/raid-check" \
-	 "bin/mdadm-syslog-events"     "/usr/sbin/mdadm-syslog-events" \
-	 "bin/notify-all.sh"           "/usr/local/sbin/notify-all.sh" \
-	 "cron.d/md-compare"           "/etc/cron.d/md-compare" \
-	 "cron.d/raid-check"           "/etc/cron.d/raid-check" \
-	 "cron.d/temp-report"          "/etc/cron.d/temp-report" \
-	 "etc/raid-check"              "/etc/sysconfig/raid-check" \
-	 "etc/mdadm.conf"              "/etc/mdadm.conf" \
-	 "etc/smb.conf"                "/etc/samba/smb.conf" \
-	 "etc/ssh_config"              "/etc/ssh/ssh_config" \
-	 "etc/sshd_config"             "/etc/ssh/sshd_config" \
+	 "notes/linux_array_setup.txt"    "$HOME/linux_array_setup.txt" \
+	 "bin/dumptemps.sh"               "/usr/local/bin/dumptemps.sh" \
+	 "bin/folder-compare.sh"          "/usr/local/bin/folder-compare.sh" \
+	 "bin/compare-helper.sh"          "/usr/local/bin/compare-helper.sh" \
+	 "bin/uri-open.sh"                "/usr/local/bin/uri-open.sh" \
+	 "bin/repeat.sh"                  "/usr/local/bin/repeat.sh" \
+	 "bin/spstart.sh"                 "/usr/local/bin/spstart.sh" \
+	 "bin/raid-check"                 "/usr/sbin/raid-check" \
+	 "bin/mdadm-syslog-events"        "/usr/sbin/mdadm-syslog-events" \
+	 "bin/notify-all.sh"              "/usr/local/sbin/notify-all.sh" \
+	 "cron.d/md-compare"              "/etc/cron.d/md-compare" \
+	 "cron.d/raid-check"              "/etc/cron.d/raid-check" \
+	 "cron.d/temp-report"             "/etc/cron.d/temp-report" \
+	 "etc/raid-check"                 "/etc/sysconfig/raid-check" \
+	 "etc/mdadm.conf"                 "/etc/mdadm.conf" \
+	 "etc/smb.conf"                   "/etc/samba/smb.conf" \
+	 "etc/ssh_config"                 "/etc/ssh/ssh_config" \
+	 "etc/sshd_config"                "/etc/ssh/sshd_config" \
 
 	while [ $# -gt 1 ]; do
 		if [ -d "$1" ]; then

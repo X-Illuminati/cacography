@@ -3,11 +3,18 @@
 alias ll='ls -al'
 alias rgrep='grep -R --color'
 alias gr='grep -RIn --color'
-alias livestreamer='python3-livestreamer --no-version-check'
 alias less='less -S'
 alias open='xdg-open'
 alias dd='dd status=progress'
-alias ydesc='youtube-dl --get-description'
+alias noise='speaker-test -t wav -c 1 -w brown_noise.wav -W /home/cbaker -D plughw:1,0'
+alias panoise='(while true; do dd if=/home/cbaker/brown_noise.wav bs=44 skip=1 ; done) | paplay --raw --channels=1 --format=s16le --rate=48000'
+alias boxy='sudo mount -t cifs //boxy/current /home/cbaker/Shares/boxy -ouid=cbaker,user=cbaker,vers=3'
+alias ls='ls --color=auto -N'
+
+ydesc () 
+{ 
+    yt-dlp -j "$@" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Description:\n"+.description'
+}
 
 youtube_getvid()
 {
@@ -51,7 +58,7 @@ ydl()
 			vidpath="$HOME/Videos"
 		}
 
-	python3-livestreamer --no-version-check "$url" best -o "${vidpath}/${vid}.mp4"
+	yt-dlp "$url" -o "${vidpath}/${vid}.mp4"
 }
 
 ypb()
@@ -81,7 +88,7 @@ ycu()
 
 musicstream()
 {
-	youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 9 "$@"
+	yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 9 "$@"
 }
 
 tone()

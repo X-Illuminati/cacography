@@ -16,13 +16,15 @@ orig      | Directory with copies of the original files (.rpmnew).
 ### home
 Various config files that belong somewhere in ~/.
 
-file              | description
-------------------|------------
-.bash_alias       | Some aliases that I find handy.
-bigclive.sh       | Play a random BigCliveDotCom video
-happy-trees.sh    | Play a random Bob Ross Joy of Painting episode
-randi-scandi.sh   | Play a random QI episode
-good-news.sh      | Play a random Futurama episode
+file                      | description
+--------------------------|------------
+.bash_alias               | Some aliases that I find handy.
+bigclive.sh               | Play a random BigCliveDotCom video
+happy-trees.sh            | Play a random Bob Ross Joy of Painting episode
+randi-scandi.sh           | Play a random QI episode
+good-news.sh              | Play a random Futurama episode
+that-pudgy-tummy.sh       | Play a random Aria episode
+swedish_murder_machine.sh | Play a random Venture Bros episode
 
 #### .config
 Various config files that belong in XDG_CONFIG_DIR
