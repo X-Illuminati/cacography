@@ -146,6 +146,8 @@ script_main ()
 	# repository. The second is the location of the file in the filesystem.
 	set -- \
 	 "home/.bash_alias"               "$HOME/.bash_alias" \
+	 "home/.bash_alias"               "$HOME/.bash_aliases" \
+	 "home/.bashrc"                   "$HOME/.bashrc" \
 	 "home/bigclive.sh"               "$HOME/bigclive.sh" \
 	 "home/happy-trees.sh"            "$HOME/happy-trees.sh" \
 	 "home/randi-scandi.sh"           "$HOME/randi-scandi.sh" \
