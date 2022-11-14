@@ -4,7 +4,7 @@
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bigclive/"
-[ -z "$FILTER" ] && FILTER="*.mkv *.webm *.mp4"
+[ -z "$FILTER" ] && FILTER="\.mp4\$|\.mkv\$|\.webm\$"
 VIDSTRING="Things worthy of note"
 REPLAYSTRING="Big Clive"
 
@@ -46,7 +46,7 @@ Options:
 Environment Variables:
   VIDDIR     The directory containing the videos
              ($VIDDIR)
-  FILTER     The glob filter used to find videos in VIDDIR
+  FILTER     The 'grep' regex pattern used to find videos in VIDDIR
              ($FILTER)
   PLAYER     The video player application to use
              ($PLAYER)
@@ -72,7 +72,7 @@ play() {
 
 random_vid() {
 	local filename
-	filename=$(ls -1 $FILTER 2>/dev/null | sort -R | head -1)
+	filename=$(ls -1 2>/dev/null | grep -E "$FILTER" | sort -R | head -1)
 	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	echo "${VIDSTRING}: $filename"
 	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
@@ -86,7 +86,7 @@ list_files() {
 	local filenum
 	local numfiles
 
-	filelist="$(ls -1rt $FILTER 2>/dev/null | nl -s ": ")"
+	filelist="$(ls -1rt 2>/dev/null  | grep -E "$FILTER" | nl -s ": ")"
 
 	if [ $# -eq 0 ]; then
 		echo "$filelist"
