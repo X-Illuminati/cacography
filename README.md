@@ -42,6 +42,7 @@ file                 | description
 ---------------------|------------
 file-manager-actions | File-manager right-click actions following DES-EMA spec
 kde-service-menus    | File-manager right-click actions following KDE Desktop Action format
+gmail.desktop        | Desktop file to launch separate firefox profile for gmail
 
 ### notes
 Random notes/documentation
