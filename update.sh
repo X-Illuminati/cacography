@@ -180,6 +180,12 @@ script_main ()
 	 "etc/smb.conf"                   "/etc/samba/smb.conf" \
 	 "etc/ssh_config"                 "/etc/ssh/ssh_config" \
 	 "etc/sshd_config"                "/etc/ssh/sshd_config" \
+	 "etc/NetworkManager/dispatcher.d/50-wg0.sh" \
+		"/etc/NetworkManager/dispatcher.d/50-wg0.sh" \
+	 "etc/NetworkManager/dispatcher.d/pre-down.d/50-wg0.sh" \
+		"/etc/NetworkManager/dispatcher.d/pre-down.d/50-wg0.sh" \
+	 "etc/NetworkManager/dispatcher.d/pre-up.d/50-wg0.sh" \
+		"/etc/NetworkManager/dispatcher.d/pre-up.d/50-wg0.sh" \
 
 	while [ $# -gt 1 ]; do
 		if [ -d "$1" ]; then
