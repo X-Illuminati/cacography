@@ -66,6 +66,7 @@ notify-all.sh       | Script to (attempt) discover all dbus-session busses and n
 hardlink-dedup.sh   | Scan directory for identical files and replace them with hardlinks.
 repeat.sh           | Repeat a command within specified limits.
 spstart.sh          | Script to properly start spacenavd with the quirks of my SpacePilot HP
+ripscript.sh        | Script to automate DVD ripping
 
 ### cron.d
 Various cron jobs.
