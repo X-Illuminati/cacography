@@ -109,3 +109,8 @@ gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
 gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
 gst-launch-1.0 audiotestsrc freq=660 num-buffers=16 ! alsasink >/dev/null
 }
+
+dirhash()
+{
+find . -type f ! -name SHA256SUM -print0 | xargs -0 sha256sum > SHA256SUM
+}
