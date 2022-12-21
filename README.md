@@ -19,6 +19,8 @@ Various config files that belong somewhere in ~/.
 file                      | description
 --------------------------|------------
 .bash_alias               | Some aliases that I find handy.
+.bashrc                   | Update PS1 to include prev command's return code
+.XCompose                 | Add greek alphabet compose keys
 bigclive.sh               | Play a random BigCliveDotCom video
 happy-trees.sh            | Play a random Bob Ross Joy of Painting episode
 randi-scandi.sh           | Play a random QI episode

@@ -148,6 +148,7 @@ script_main ()
 	 "home/.bash_alias"               "$HOME/.bash_alias" \
 	 "home/.bash_alias"               "$HOME/.bash_aliases" \
 	 "home/.bashrc"                   "$HOME/.bashrc" \
+	 "home/.XCompose"                 "$HOME/.XCompose" \
 	 "home/bigclive.sh"               "$HOME/bigclive.sh" \
 	 "home/happy-trees.sh"            "$HOME/happy-trees.sh" \
 	 "home/randi-scandi.sh"           "$HOME/randi-scandi.sh" \
