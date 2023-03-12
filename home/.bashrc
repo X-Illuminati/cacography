@@ -133,3 +133,8 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# tmpfs thumbnail directory
+[ -d "$XDG_RUNTIME_DIR" ] && [ ! -d "$XDG_RUNTIME_DIR/thumbnails" ] && mkdir "$XDG_RUNTIME_DIR/thumbnails"
+[ -d "$XDG_RUNTIME_DIR/thumbnails" ] && [ -e ~/.cache/thumbnails ] && [ ! -h ~/.cache/thumbnails ] && rm -rf ~/.cache/thumbnails 
+[ -d "$XDG_RUNTIME_DIR/thumbnails" ] && [ ! -e ~/.cache/thumbnails ] && ln -s -t ~/.cache "$XDG_RUNTIME_DIR/thumbnails" || true
+
