@@ -7,6 +7,7 @@
 
 vidstring()
 {
+{
 sort -R << EOF
 Swedish Murder Machine
 Half Swedish, Quarter Polish, Quarter Winnebago
@@ -32,8 +33,8 @@ Don't go fishing for trouble, Brock Cousteau
 Interests: Hand-to-hand combat, murder, Zeppelin
 The car, the clothes, the music, the Tennessee top hat
 EOF
+} | tail -n 1
 }
-VIDSTRING=$(vidstring | tail -n 1)
 REPLAYSTRING="Replay"
 
 BOLD="$(tput bold)"
@@ -113,7 +114,7 @@ random_vid() {
 	local filename
 	filename=$(ls -1 $FILTER | sort -R | head -1)
 	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-	echo "${VIDSTRING}:"
+	echo "$(vidstring):"
 	echo "${filename}"
 	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 	play "$filename"

@@ -2,6 +2,7 @@
 
 [ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
+[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-futurama"
 [ -z "$FILTER" ] && FILTER="*.m4v"
 VIDSTRING="Good news, everyone!"
@@ -72,11 +73,11 @@ play() {
 	if [ -n "$description" ]; then
 		echo "$description"
 		echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
-		if [ -n "$DESCOPT" ]; then
-			"$PLAYER" $PLAYEROPT $DESCOPT "$description" "$1" 2>/dev/null
-		else
-			"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
-		fi
+	fi
+	if [ -n "$description" -a -n "$DESCOPT" ]; then
+		"$PLAYER" $PLAYEROPT $DESCOPT "$description" "$1" 2>/dev/null
+	else
+		"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
 	fi
 }
 
@@ -114,7 +115,6 @@ named_vid() {
 		if [ -z "$filenames" ]; then
 			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
-		echo "filenames=" "$filenames"
 	fi
 	if [ -z "$filenames" ]; then
 		echo "$1: not found"

@@ -89,9 +89,9 @@ play() {
 	if [ -n "$description" ]; then
 		echo "$description"
 		echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
-		if [ -n "$DESCOPT" ]; then
-			"$PLAYER" $PLAYEROPT $DESCOPT "$description" "$1" 2>/dev/null
-		fi
+	fi
+	if [ -n "$description" -a -n "$DESCOPT" ]; then
+		"$PLAYER" $PLAYEROPT $DESCOPT "$description" "$1" 2>/dev/null
 	else
 		"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
 	fi

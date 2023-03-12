@@ -62,7 +62,7 @@ play() {
 		echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 		"$PLAYER" $PLAYEROPT $DESCOPT "$(cat "$bname.description")" "$1" 2>/dev/null
 	else
-		"$PLAYER" $PLAYEROPT "$1"
+		"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
 	fi
 }
 
