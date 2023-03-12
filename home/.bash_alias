@@ -13,7 +13,7 @@ alias ls='ls --color=auto -N'
 
 ydesc () 
 { 
-    yt-dlp -j "$@" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Description:\n"+.description'
+    yt-dlp -j "$@" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Release Date: "+(.release_timestamp|strflocaltime("%Y-%m-%d %H:%M:%S")?)//"Upload Date: "+(.upload_date|.[0:4]+"-"+.[4:6]+"-"+.[6:8]),"Description:\n"+.description'
 }
 
 youtube_getvid()
