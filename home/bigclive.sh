@@ -5,6 +5,7 @@
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bigclive/"
 [ -z "$FILTER" ] && FILTER="\.mp4\$|\.mkv\$|\.webm\$"
+[ -z "$FETCHOPT" ] && FETCHOPT="-i -w --compat-options filename-sanitization,filename"
 VIDSTRING="Things worthy of note"
 REPLAYSTRING="Big Clive"
 
@@ -27,21 +28,32 @@ fi
 trap 'echo interrupted; exit 130' INT
 
 usage() {
-	echo "Usage: $0 [-h|-l [QUERY]|FILE [FILE...]]\
+	echo "Usage: \
+
+$0 [OPTIONS] [FILE [FILE...]]
+$0 [OPTIONS] -l [QUERY]]
+$0 [OPTIONS] -f URL
 
 Play a random video from \$VIDDIR or play FILE if specified.
-
 FILE can be an exact or partial filename or a number as
 returned by the -l option. As a number it can also be negative
 to count backwards from the end.
 
+-l or --list will list files in \$VIDDIR, taking an
+optional query parameter.
+
+-f or --fetch will download the video specified by the URL.
+
 Options:
   -h, --help   Display this help text
-  -l, --list   List files in \$VIDDIR, optionally matching a query
   -u, --update Download recent videos
   -U, --full-update
                Download all videos
-  -f, --fetch  Fetch a single video (e.g. if playlist not updated)
+  -L, --live   Only play/list bigclivelive videos (also modifies -f)
+  -t, --tattoo Only play/list Royal Edinburgh Military Tattoo Videos (also modifies -f)
+  --announcements
+               Only play/list announcement videos (also modifies -f)
+  -a, --all    Include bigclivelive, tattoo, and announcement videos
 
 Environment Variables:
   VIDDIR     The directory containing the videos
@@ -66,16 +78,33 @@ play() {
 		echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 		"$PLAYER" $PLAYEROPT $DESCOPT "$(cat "$bname.description")" "$1" 2>/dev/null
 	else
-		"$PLAYER" $PLAYEROPT "$1"
+		"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
 	fi
+}
+
+get_file_list() {
+	#ls -1 2>/dev/null | grep -E "$FILTER" #old file list method for single dir
+
+	#new file list method supporting subdirs
+	#$1 passes the list of -P and -I options for tree
+	#note: may need to set -f here if $1 includes * or ?
+	tree $1 -NDifU --prune --noreport --timefmt %s |
+		sort |
+		cut -d '/' -f 1 --complement |
+		grep -E "$FILTER"
 }
 
 random_vid() {
 	local filename
-	filename=$(ls -1 2>/dev/null | grep -E "$FILTER" | sort -R | head -1)
-	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-	echo "${VIDSTRING}: $filename"
-	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
+
+	filename=$(get_file_list "$1" | sort -R | head -1)
+	shift
+
+	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	echo "${VIDSTRING}:"
+	echo "${filename}${OFFBOLD}"
+	echo -n "Released: "; date -f <(stat -c "%y" "$filename")
+	echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 	play "$filename"
 }
 
@@ -86,7 +115,8 @@ list_files() {
 	local filenum
 	local numfiles
 
-	filelist="$(ls -1rt 2>/dev/null  | grep -E "$FILTER" | nl -s ": ")"
+	filelist="$(get_file_list "$1" | nl -s ": ")"
+	shift
 
 	if [ $# -eq 0 ]; then
 		echo "$filelist"
@@ -101,7 +131,6 @@ list_files() {
 				# $1 is possibly not a number here
 				filenum="$i"
 			fi
-
 
 			filenames="$(echo "$filelist" | grep -s -E "^ *$filenum:")"
 
@@ -118,17 +147,20 @@ named_vid() {
 	local filenames
 
 	filenames="$(list_files "$@" | cut -d ":" -f 2- | cut -d " " -f 2-)"
+	shift
 
 	if [ -z "$filenames" ]; then
-		echo "$1: not found"
+		echo "No matches founhd: $@"
 		result=1
 	else
 		IFS=$'\x0a'
 		for i in $filenames; do
 			unset IFS
-			echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			echo "${REPLAYSTRING}: $i"
-			echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
+			echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+			echo "${REPLAYSTRING}:"
+			echo "${i}${OFFBOLD}"
+			echo -n "Released: "; date -f <(stat -c "%y" "$i")
+			echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 			play "$i" || echo "Playback failed ($?) for $i"
 		done
 		unset IFS
@@ -137,10 +169,15 @@ named_vid() {
 
 fetch_single_vid() {
 	local i
+	local retval
+	retval=0
 	for i in "$@"; do
-		youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs $i ||
+		yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs $i || {
 			echo "Fetch failed ($?) for $i"
+			retval=$((retval+1))
+		}
 	done
+	return $retval
 }
 
 update_vids() {
@@ -150,29 +187,43 @@ update_vids() {
 	else
 		extra_args="--playlist-end $1"
 	fi
-	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UCtM5z2gkrGRuWd0JQMx76qA $extra_args
-	youtube-dl -R 5 -i -w --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UClIzWmVzGPm2zhNT2XZ-Rkw $extra_args
+
+#	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/c/Bigclive/videos $extra_args
+	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/playlist?list=UUtM5z2gkrGRuWd0JQMx76qA $extra_args
+#	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/watch?list=UUlIzWmVzGPm2zhNT2XZ-Rkw $extra_args
+
+	cd bigclivelive
+#	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/c/BigCliveLive/videos $extra_args
+	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/@BigCliveLive $extra_args
+#	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UCtM5z2gkrGRuWd0JQMx76qA $extra_args
+#	yt-dlp $FETCHOPT --download-archive archive.txt --write-description --write-info-json --write-thumbnail --write-sub --all-subs https://www.youtube.com/channel/UClIzWmVzGPm2zhNT2XZ-Rkw $extra_args
+	cd ..
 }
 
 script_main() {
 	local fetch_only_flag
+	local include_live_flag
+	local include_announce_flag
+	local include_tattoo_flag
+	local include_all_flag
+	local include_none_flag
+	local tree_match_pattern
+	local i
 	fetch_only_flag=0
+	include_live_flag=0
+	include_announce_flag=0
+	include_tattoo_flag=0
+	include_all_flag=0
+	include_none_flag=1
+	tree_match_pattern="--matchdirs"
 
 	if [ $# -eq 0 ]; then
 		random_vid
+		return $?
 	else
 		case $1 in
 			-h|--help)
 				usage
-				return 0
-			;;
-			-l|--list)
-				shift
-				if [ $# -eq 0 ]; then
-					list_files
-				else
-					list_files "$@"
-				fi
 				return 0
 			;;
 			-u|--update)
@@ -187,12 +238,100 @@ script_main() {
 				fetch_only_flag=1
 				shift
 			;;
+			-L|--live)
+				include_live_flag=1
+				include_none_flag=0
+				shift
+			;;
+			--announcements)
+				include_announce_flag=1
+				include_none_flag=0
+				shift
+			;;
+			-t|--tattoo)
+				include_tattoo_flag=1
+				include_none_flag=0
+				shift
+			;;
+			-a|--all)
+				include_all_flag=1
+				include_none_flag=0
+				shift
+			;;
 		esac
 
 		if [ 1 -eq $fetch_only_flag ]; then
 			fetch_single_vid "$@"
+			return $?
+		fi
+	fi
+
+	if [ 0 -eq $include_all_flag ]; then
+		if [ 0 -eq $include_none_flag ]; then
+			tree_match_pattern="${tree_match_pattern} -P ."
+			if [ 1 -eq $include_announce_flag ]; then
+				tree_match_pattern="${tree_match_pattern}|announcements"
+			fi
+			if [ 1 -eq $include_tattoo_flag ]; then
+				tree_match_pattern="${tree_match_pattern}|tattoo"
+			fi
+			if [ 1 -eq $include_live_flag ]; then
+				tree_match_pattern="${tree_match_pattern}|bigclivelive"
+			fi
+		fi
+
+		tree_match_pattern="${tree_match_pattern} -I ."
+		if [ 0 -eq $include_announce_flag ]; then
+			tree_match_pattern="${tree_match_pattern}|announcements"
+		fi
+		if [ 0 -eq $include_tattoo_flag ]; then
+			tree_match_pattern="${tree_match_pattern}|tattoo"
+		fi
+		if [ 0 -eq $include_live_flag ]; then
+			tree_match_pattern="${tree_match_pattern}|bigclivelive"
+		fi
+	fi
+
+	if [ $# -eq 0 ]; then
+		random_vid "$tree_match_pattern"
+		return $?
+	else
+		case $1 in
+			-h|--help)
+				usage
+				return 0
+			;;
+			-l|--list)
+				shift
+				if [ $# -eq 0 ]; then
+					list_files "$tree_match_pattern"
+				else
+					list_files "$tree_match_pattern" "$@"
+				fi
+				return 0
+			;;
+			-f|--fetch)
+				fetch_only_flag=1
+				shift
+			;;
+		esac
+
+		if [ 1 -eq $fetch_only_flag ]; then
+			if [ 1 -eq $include_live_flag ]; then
+				echo "Fetching video into bigclivelive subdir"
+				cd bigclivelive
+			elif [ 1 -eq $include_announce_flag ]; then
+				echo "Fetching video into announcements subdir"
+				cd announcements
+			elif [ 1 -eq $include_tattoo_flag ]; then
+				echo "Fetching video into tattoo subdir"
+				cd tattoo
+			fi
+			fetch_single_vid "$@"
+			return $?
 		else
-			named_vid "$@"
+			named_vid "$tree_match_pattern" "$@"
+			return $?
 		fi
 	fi
 }
