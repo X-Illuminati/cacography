@@ -217,10 +217,7 @@ script_main() {
 	include_none_flag=1
 	tree_match_pattern="--matchdirs"
 
-	if [ $# -eq 0 ]; then
-		random_vid
-		return $?
-	else
+	if [ $# -gt 0 ]; then
 		case $1 in
 			-h|--help)
 				usage
