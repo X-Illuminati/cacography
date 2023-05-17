@@ -150,7 +150,7 @@ named_vid() {
 	shift
 
 	if [ -z "$filenames" ]; then
-		echo "No matches founhd: $@"
+		echo "No matches found: $@"
 		result=1
 	else
 		IFS=$'\x0a'
