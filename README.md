@@ -69,6 +69,7 @@ hardlink-dedup.sh   | Scan directory for identical files and replace them with h
 repeat.sh           | Repeat a command within specified limits.
 spstart.sh          | Script to properly start spacenavd with the quirks of my SpacePilot HP
 ripscript.sh        | Script to automate DVD ripping
+binary_merge.py     | Script to compare multiple binary files and create a merged output based on consensus
 
 ### cron.d
 Various cron jobs.
