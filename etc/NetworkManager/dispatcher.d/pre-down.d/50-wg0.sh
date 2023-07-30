@@ -10,7 +10,7 @@ if [ "$DEVICE_IP_IFACE" != "$WG_INTERFACE_NAME" ]; then
 fi
 
 # Script location - this is created by the pre-up script
-TMPDN="/tmp/${WG_INTERFACE_NAME}-route-teardown"
+TMPDN="/run/${WG_INTERFACE_NAME}-route-teardown"
 
 echo "$(basename "$0"): $DEVICE_IP_IFACE pre-down script executing"
 # check file permissions to ensure it hasn't been tampered with

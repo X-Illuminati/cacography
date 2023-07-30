@@ -15,7 +15,7 @@ case $2 in
 		echo "$(basename "$0"): $DEVICE_IP_IFACE going up"
 
 		# Script location - this is created by the pre-up script
-	        TMPUP="/tmp/${WG_INTERFACE_NAME}-route-bringup"
+	        TMPUP="/run/${WG_INTERFACE_NAME}-route-bringup"
 
 		# check file permissions to ensure it hasn't been tampered with
 		if ! stat "${TMPUP}" --printf "%A %u %g\n" | grep -q ".r...-..-. 0"; then

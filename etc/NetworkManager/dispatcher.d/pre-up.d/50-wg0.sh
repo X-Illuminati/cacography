@@ -15,8 +15,8 @@ fi
 echo "$(basename "$0"): $DEVICE_IP_IFACE pre-up script executing"
 
 #Helper Variables:
-TMPUP="/tmp/${WG_INTERFACE_NAME}-route-bringup"
-TMPDN="/tmp/${WG_INTERFACE_NAME}-route-teardown"
+TMPUP="/run/${WG_INTERFACE_NAME}-route-bringup"
+TMPDN="/run/${WG_INTERFACE_NAME}-route-teardown"
 if [ ! -z "$ENDPOINT_DNS_NAME" ]; then
 	echo "checking $ENDPOINT_DNS_NAME"
 	IPV4_ENDPOINT="$(host "${ENDPOINT_DNS_NAME}" | grep -m 1 "has address" | cut -d ' ' -f 4)"
@@ -41,7 +41,10 @@ IPV6_GW_DEV="$(echo "${IPV6_DEFAULT_ROUTE}" | sed -e 's/.*dev \([[:alnum:]]*\).*
 IPV4_GW_ROUTE="$(echo "${IPV4_DEFAULT_ROUTE}" | sed -e 's/default via //;s/ proto [[:alnum:]]*//;s/ metric [[:digit:]]*//')"
 IPV6_GW_ROUTE="$(echo "${IPV6_DEFAULT_ROUTE}"  | sed -e 's/default via //;s/ proto [[:alnum:]]*//;s/ metric [[:digit:]]*//')"
 
+#Create TMPUP/TMPDN scripts
+###########################
 #IPv4 Routes:
+#############
 if [ -n "$IPV4_DEFAULT_ROUTE" ]; then
 	# We need to keep an active route to the gateway via the current
 	# interface just in case it will get overridden by other routes that
@@ -49,21 +52,24 @@ if [ -n "$IPV4_DEFAULT_ROUTE" ]; then
 	echo "ip route add ${IPV4_GW_ROUTE} metric 10" >> "$TMPUP"
 	echo "ip route del ${IPV4_GW_ROUTE} metric 10" >> "$TMPDN"
 
-	# We need to ensure an active route to our endpoint address via the
-	# current interface even after the new default route pushes everything
-	# through wg.
-	echo "ip route add ${IPV4_ENDPOINT}/32 via ${IPV4_GW_IP} dev ${IPV4_GW_DEV} metric 20" >> "$TMPUP"
-	echo "ip route del ${IPV4_ENDPOINT}/32 via ${IPV4_GW_IP} dev ${IPV4_GW_DEV} metric 20" >> "$TMPDN"
-
-	# We need to provide a route to the remote "internal" network via wg
-	# in case the local "internal" network happens to use the same IP
-	# subnet. However, this will have the side-effect of blocking the local
-	# addresses on the network.
-	echo "ip route add ${IPV4_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPUP"
-	echo "ip route del ${IPV4_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPDN"
+	if [ -n "$IPV4_ENDPOINT" ]; then
+		# We need to ensure an active route to our endpoint address via the
+		# current interface even after the new default route pushes everything
+		# through wg.
+		echo "ip route add ${IPV4_ENDPOINT}/32 via ${IPV4_GW_IP} dev ${IPV4_GW_DEV} metric 20" >> "$TMPUP"
+		echo "ip route del ${IPV4_ENDPOINT}/32 via ${IPV4_GW_IP} dev ${IPV4_GW_DEV} metric 20" >> "$TMPDN"
+	fi
 fi
 
+# We need to provide a route to the remote "internal" network via wg
+# in case the local "internal" network happens to use the same IP
+# subnet. However, this will have the side-effect of blocking the local
+# addresses on the network.
+echo "ip route add ${IPV4_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPUP"
+echo "ip route del ${IPV4_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPDN"
+
 #IPv6 Routes:
+#############
 if [ -n "$IPV6_DEFAULT_ROUTE" ]; then
 	# We need to keep an active route to the gateway via the current
 	# interface just in case it will get overridden by other routes that
@@ -71,16 +77,19 @@ if [ -n "$IPV6_DEFAULT_ROUTE" ]; then
 	echo "ip -6 route add ${IPV6_GW_ROUTE} metric 10" >> "$TMPUP"
 	echo "ip -6 route del ${IPV6_GW_ROUTE} metric 10" >> "$TMPDN"
 
-	# We need to ensure an active route to our endpoint address via the
-	# current interface even after the new default route pushes everything
-	# through wg.
-	echo "ip -6 route add ${IPV6_ENDPOINT}/128 via ${IPV6_GW_IP} dev ${IPV6_GW_DEV} metric 20" >> "$TMPUP"
-	echo "ip -6 route del ${IPV6_ENDPOINT}/128 via ${IPV6_GW_IP} dev ${IPV6_GW_DEV} metric 20" >> "$TMPDN"
-
-	# We need to provide a route to the remote "internal" network via wg
-	# in case the local "internal" network happens to use the same IP
-	# subnet. However, this will have the side-effect of blocking the local
-	# addresses on the network.
-	echo "ip -6 route add ${IPV6_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPUP"
-	echo "ip -6 route del ${IPV6_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPDN"
+	if [ -n "$IPV6_ENDPOINT" ]; then
+		# We need to ensure an active route to our endpoint address via the
+		# current interface even after the new default route pushes everything
+		# through wg.
+		echo "ip -6 route add ${IPV6_ENDPOINT}/128 via ${IPV6_GW_IP} dev ${IPV6_GW_DEV} metric 20" >> "$TMPUP"
+		echo "ip -6 route del ${IPV6_ENDPOINT}/128 via ${IPV6_GW_IP} dev ${IPV6_GW_DEV} metric 20" >> "$TMPDN"
+	fi
 fi
+
+# We need to provide a route to the remote "internal" network via wg
+# in case the local "internal" network happens to use the same IP
+# subnet. However, this will have the side-effect of blocking the local
+# addresses on the network.
+echo "ip -6 route add ${IPV6_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPUP"
+echo "ip -6 route del ${IPV6_INTERNAL_NET} dev ${DEVICE_IP_IFACE} metric 60" >> "$TMPDN"
+
