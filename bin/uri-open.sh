@@ -95,8 +95,17 @@ function run_ls ()
 function run_ydl ()
 {
 	local viddir
+	local ydl_bin
+	local ydl_out
 	local i
 	i=0
+	if [ "$YOUTUBE_FUNC" == "YDL" ]; then
+		ydl_bin="youtube-dl"
+		ydl_out="$2.mp4"
+	else
+		ydl_bin="yt-dlp"
+		ydl_out="%(id)s.%(ext)s"
+	fi
 	[ -d "$HOME/Videos2" ] &&
 		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
 			viddir="$HOME/Videos2"
@@ -106,11 +115,13 @@ function run_ydl ()
 			viddir="$HOME/Videos"
 		}
 
-	while ! /usr/bin/flock "${viddir}/$2.mp4.part" youtube-dl -o "${viddir}/$2.mp4" "$1"; do
+	echo flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"
+
+	while ! /usr/bin/flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"; do
 		i=$((i+1))
 		[ $i -ge ${3:-0} ] && break
 	done
-	[ -f "${viddir}/$2.mp4.part" -a ! -s "${viddir}/$2.mp4.part" ] && rm "${viddir}/$2.mp4.part"
+	[ -f "${viddir}/$2.part" -a ! -s "${viddir}/$2.part" ] && rm "${viddir}/$2.part"
 	true #at this point we are committed
 }
 
@@ -133,16 +144,22 @@ function run_youtube ()
    run_vlc "$HOME/Videos/$vid.mp4"
   elif [ -e "$HOME/Videos/$vid.mkv" ]; then
    run_vlc "$HOME/Videos/$vid.mkv"
+  elif [ -e "$HOME/Videos/$vid.webm" ]; then
+   run_vlc "$HOME/Videos/$vid.webm"
   elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
    run_vlc "$HOME/Videos2/$vid.mp4"
   elif [ -e "$HOME/Videos2/$vid.mkv" ]; then
    run_vlc "$HOME/Videos2/$vid.mkv"
+  elif [ -e "$HOME/Videos2/$vid.webm" ]; then
+   run_vlc "$HOME/Videos2/$vid.webm"
   else
    if [ "$YOUTUBE_FUNC" = "LS" ]; then
     [ -e "$HOME/Videos/$vid.temp" ] && return 0
     [ -e "$HOME/Videos2/$vid.temp" ] && return 0
     run_ls "$1" "$vid"
    elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
+    run_ydl "$1" "$vid" ${YDL_RETRIES}
+   elif [ "$YOUTUBE_FUNC" = "YTDLP" ]; then
     run_ydl "$1" "$vid" ${YDL_RETRIES}
    else
     run_vlc "$1"
@@ -280,6 +297,8 @@ function run_twitch ()
     [ -e "$HOME/Videos2/$vid.temp" ] && return 0
     run_ls "$1" "$vid"
    elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
+    run_ydl "$1" "$vid"
+   elif [ "$YOUTUBE_FUNC" = "YTDLP" ]; then
     run_ydl "$1" "$vid"
    else
     run_vlc "$1"
