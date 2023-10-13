@@ -206,9 +206,13 @@ function run_podcast ()
 function test_peertube ()
 {
  for domain in ${PEERTUBE_DOMAINS}; do
-  #match https://<domain>/videos/watch/<video-uuid>
   case "$1" in
+   #match https://<domain>/videos/watch/<video-uuid>
    https://${domain}/videos/watch/*)
+    return 0
+    ;;
+   #match https://<domain>/w/<video-uuid>
+   https://${domain}/w/*)
     return 0
     ;;
   esac
@@ -219,11 +223,18 @@ function test_peertube ()
 function run_peertube ()
 {
  local vid
+ local uri
 
  case "$1" in
   #match https://<domain>/videos/watch/<video-uuid>
   https://*/videos/watch/*)
    vid=$(echo "$1" | /usr/bin/sed -nre 's_^https://[^/]+/videos/watch/__p')
+   uri="$1"
+   ;;
+  #match https://<domain>/w/<video-uuid>
+  https://*/w/*)
+   vid=$(echo "$1" | /usr/bin/sed -nre 's_^https://[^/]+/w/__p')
+   uri=$(echo "$1" | /usr/bin/sed -nre 's_/w/_/videos/watch/_p')
    ;;
  esac
 
@@ -233,7 +244,7 @@ function run_peertube ()
   elif [ -e "$HOME/Videos2/$vid.mp4" ]; then
    run_vlc "$HOME/Videos2/$vid.mp4"
   else
-   run_ydl "$1" "$vid"
+   run_ydl "$uri" "$vid"
   fi
  fi
 }
