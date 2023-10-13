@@ -313,4 +313,12 @@ function main ()
 	done
 }
 
-main "$@"
+#for some reason, plasmashell has its stdout redirected to /dev/null
+#so applications launched from the menu also have no stdout
+#use first parameter -d to duplicate stderr
+if [ "$1" = "-d" ]; then
+	shift
+	main "$@" 1>&2
+else
+	main "$@"
+fi
