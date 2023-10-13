@@ -10,7 +10,7 @@
 #     2048   default start
 #     *      leave about .1-1% of the disk free
 #   t        change partition type
-#     21     Linux raid
+#     29     Linux raid (was 21?)
 #   x        expert mode
 #     n      change partition name
 #       *    Set name like "MD1 Member 01"
@@ -114,7 +114,18 @@ sudo nice -n 5 rsync -aHAX --info=progress2 /srv/md5/ /srv/md7/
 
 
 #
-# Extra: Add drives to an array
+# Extra: Replace drive in existing array
+#
+# Step 1: collect information about existing array
+sudo gdisk -l /dev/sda
+# Step 2: partition the new disks
+sudo gdisk /dev/sdl #make same as member disk sda above
+# Step 3: remove detached devices and add the new device
+sudo mdadm -r /dev/md5 detached
+sudo mdadm --add-spare /dev/md5 /dev/sdl1
+
+#
+# Extra: Add drives to an array (expanding array size)
 #
 # Step 0: unmount the filesystem
 sudo umount /dev/md5

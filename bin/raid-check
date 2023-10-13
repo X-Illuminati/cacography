@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # This script reads it's configuration from /etc/sysconfig/raid-check
 # Please use that file to enable/disable this script or to set the

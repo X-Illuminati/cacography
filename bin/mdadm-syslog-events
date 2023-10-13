@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/sh
 #
 # sample event handling script for mdadm
 # e.g. mdadm --follow --program=/sbin/syslog-events --scan
@@ -14,9 +14,9 @@ facility="kern"
 tag="mdmonitor"
 
 case x"${event}" in
-    xFail*) priority="error" ; urgency="critical" ;;
-    xTest*) priority="debug" ; urgency="low" ;;
-    x*)     priority="info" ; urgency="normal"  ;;
+    xFail*) priority="error" ;;
+    xTest*) priority="debug" ;;
+    x*)     priority="info"  ;;
 esac
 
 msg="${event} event on ${dev}"
@@ -24,5 +24,4 @@ if [ x"${disc}" != x ]; then
      msg="${msg}, related to disc ${disc}"
 fi
 
-logger -t "${tag}" -p "${facility}.${priority}" -- "${msg}"
-/usr/local/sbin/notify-all.sh -t 0 -u "${urgency}" -a "${tag}" "${tag}" "${msg}"
+exec logger -t "${tag}" -p "${facility}.${priority}" -- "${msg}"
