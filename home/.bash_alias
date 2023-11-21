@@ -12,10 +12,20 @@ alias boxy='sudo mount -t cifs //boxy/current /home/cbaker/Shares/boxy -ouid=cba
 alias ls='ls --color=auto -N'
 alias sha='sha256sum'
 alias shac='sha256sum --check'
+alias wifi='sudo rmmod ath10k_pci; sudo rmmod ath10k_core; sudo rmmod ath; sudo modprobe ath10k_pci'
+alias touch='sudo sh -c "echo 0003:04F3:2494.0002 > /sys/bus/hid/drivers/hid-multitouch/bind"'
+alias notouch='sudo sh -c "echo 0003:04F3:2494.0002 > /sys/bus/hid/drivers/hid-multitouch/unbind"'
 
-ydesc () 
-{ 
+ydesc ()
+{
+    set -o pipefail
     yt-dlp -j "$@" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Release Date: "+(.release_timestamp|strflocaltime("%Y-%m-%d %H:%M:%S")?)//"Upload Date: "+(.upload_date|.[0:4]+"-"+.[4:6]+"-"+.[6:8]),"Description:\n"+.description'
+}
+
+quickplay() {
+  ydesc "$1" && {
+    yt-dlp "$1" -o - 2>/dev/null | vlc - >/dev/null
+  }
 }
 
 youtube_getvid()
