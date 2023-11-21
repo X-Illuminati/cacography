@@ -1,6 +1,9 @@
 # Include the regular locale-specific compose file
 include "%L"
 
+# Misc
+<Multi_key> <_> <_> : "̅"     U0305    # COMBINING OVERLINE
+
 # Other symbols
 <Multi_key> <bar> <minus>      : "†"   dagger # DAGGER
 <Multi_key> <minus> <bar>      : "†"   dagger # DAGGER
