@@ -104,7 +104,7 @@ function run_ydl ()
 		ydl_out="$2.mp4"
 	else
 		ydl_bin="yt-dlp"
-		ydl_out="%(id)s.%(ext)s"
+		ydl_out="[%(channel)s] %(title)s [%(id)s].%(ext)s"
 	fi
 	[ -d "$HOME/Videos2" ] &&
 		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
@@ -140,7 +140,11 @@ function run_youtube ()
  }
 
  if [ -n "$vid" ]; then
-  if [ -e "$HOME/Videos/$vid.mp4" ]; then
+  if [ -e "$HOME/Videos/"*"[$vid]."* ]; then
+   run_vlc "$HOME/Videos/"*"[$vid]."*
+  elif [ -e "$HOME/Videos2/"*"[$vid]."* ]; then
+   run_vlc "$HOME/Videos2/"*"[$vid]."*
+  elif [ -e "$HOME/Videos/$vid.mp4" ]; then
    run_vlc "$HOME/Videos/$vid.mp4"
   elif [ -e "$HOME/Videos/$vid.mkv" ]; then
    run_vlc "$HOME/Videos/$vid.mkv"
