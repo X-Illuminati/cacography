@@ -4,7 +4,7 @@
 [ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
 [ -z "$DESCOPT" ] && DESCOPT="--meta-description"
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-qi"
-[ -z "$FILTER" ] && FILTER="*.mp4 *.mkv *.avi"
+[ -z "$FILTER" ] && FILTER="*.mp4 *.mkv"
 VIDSTRING="Randi-Scandi"
 REPLAYSTRING="Replay"
 
