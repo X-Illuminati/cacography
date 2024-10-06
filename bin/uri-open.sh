@@ -213,13 +213,32 @@ function run_wget ()
 function run_podcast ()
 {
  local mp3
+ local len
+ local longname
  mp3="$(basename "${1%\?*}")"
+ len=${#mp3}
+ if [ $len -gt 24 ]; then
+  mp3="[${mp3:0:10}…${mp3:$((len-14)):10}]${mp3:$((len-4))}"
+ else
+  mp3="[${mp3:0:$((len-4))}]${mp3:$((len-4))}"
+ fi
+
  if [ -n "$mp3" ]; then
-  if [ -e "$HOME/Podcasts/$mp3" ]; then
-   run_xdg_open "$HOME/Podcasts/$mp3"
+  if [ -e "$HOME/Podcasts/"*"$mp3" ]; then
+   echo "Opening $HOME/Podcasts/"*"$mp3"
+   run_xdg_open "$HOME/Podcasts/"*"$mp3"
   else
    [ -e "$HOME/Podcasts/$mp3.temp" ] && return 0
+   echo "Downloading $1 to $HOME/Podcasts/$mp3"
    run_wget "$1" "$HOME/Podcasts/$mp3"
+   longname="$(ffprobe -of json -show_format "$HOME/Podcasts/$mp3" 2>/dev/null | jq -r ".format.tags | (if .artist then .artist else if .album then .album else \"\" end end)+(if .title then \"-\"+.title else \"\" end)")"
+   longname="${longname//\?/}"
+   longname="${longname//\:/-}"
+   longname="${longname#-}"
+   if [ -n "$longname" ]; then
+    echo "Renaming download to ${longname} ${mp3}"
+    mv "$HOME/Podcasts/$mp3" "$HOME/Podcasts/${longname} ${mp3}"
+   fi
   fi
  fi
 }
