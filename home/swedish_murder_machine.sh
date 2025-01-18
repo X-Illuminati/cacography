@@ -145,7 +145,7 @@ named_vid() {
 		if [ -z "$filenames" ]; then
 			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
-		echo "filenames=" "$filenames"
+		#echo "filenames=" "$filenames"
 	fi
 	if [ -z "$filenames" ]; then
 		echo "$1: not found"

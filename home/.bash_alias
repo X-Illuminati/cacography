@@ -12,6 +12,7 @@ alias boxy='sudo mount -t cifs //boxy.attlocal.net/current /home/cbaker/Shares/b
 alias ls='ls --color=auto -N'
 alias sha='sha256sum'
 alias shac='sha256sum --check'
+alias stats='jq -s "if length>1 then . else .[] end | { min:min, max:max, sum:add, count:length, avg: (add/length), median: (sort|.[(length/2|floor)]) }"'
 alias wifi='sudo rmmod ath10k_pci; sudo rmmod ath10k_core; sudo rmmod ath; sudo modprobe ath10k_pci'
 alias touchscreen='sudo sh -c "echo $(ls -1 /sys/bus/usb/devices/*/*04F3:2494*/modalias | grep -o "[[:xdigit:]:.]\{19\}" | head -n1) > /sys/bus/hid/drivers/hid-multitouch/bind"'
 alias notouchscreen='sudo sh -c "echo $(ls -1 /sys/bus/usb/devices/*/*04F3:2494*/modalias | grep -o "[[:xdigit:]:.]\{19\}" | head -n1) > /sys/bus/hid/drivers/hid-multitouch/unbind"'
@@ -20,7 +21,7 @@ alias usbfix='sudo sh -c "echo \"3-2:1.0\" > /sys/bus/usb/drivers/hub/unbind; sl
 ydesc ()
 {
     set -o pipefail
-    yt-dlp -j "$@" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Release Date: "+(.release_timestamp|strflocaltime("%Y-%m-%d %H:%M:%S")?)//"Upload Date: "+(.upload_date|.[0:4]+"-"+.[4:6]+"-"+.[6:8]),"Description:\n"+.description'
+    yt-dlp -j "${@%.[mMwW][4pPeEkK][4bBvV]*}" | jq -r '"Title: "+.title,"Channel: "+.channel,"URL: "+.webpage_url,"Duration: "+(.duration/60 | tostring),"Release Date: "+(.release_timestamp|strflocaltime("%Y-%m-%d %H:%M:%S")?)//"Upload Date: "+(.upload_date|.[0:4]+"-"+.[4:6]+"-"+.[6:8]),"Description:\n"+.description'
 }
 
 quickplay() {
