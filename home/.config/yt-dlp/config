@@ -1,0 +1,11 @@
+# avoid high resolution or tricky codecs that don't always play well
+-f '((bestvideo[format_note!=Premium][height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/bestvideo[format_note!=Premium][height<1080])+bestaudio/best[height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/best[height<1080]/best)'
+
+# limit download rate and other parameters that might trigger bot detection
+-r 1.5M
+--retry-sleep 5
+--sleep-interval 5
+--max-sleep-interval 20
+--sleep-subtitles 2
+--sleep-requests 2
+
