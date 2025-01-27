@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync Videos/VIDEOS.ods from boxy
+Requisite=home-cbaker-Shares-boxy.mount
+
+[Service]
+Type=simple
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+ExecStart=%h/.local/share/systemd/user/sync-videos-ods.sh
+WorkingDirectory=%h
+ProtectSystem=full
+

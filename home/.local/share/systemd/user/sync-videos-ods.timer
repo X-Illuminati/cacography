@@ -1,0 +1,10 @@
+[Unit]
+Description=Sync Videos/VIDEOS.ods daily from boxy
+Requisite=home-cbaker-Shares-boxy.mount
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
