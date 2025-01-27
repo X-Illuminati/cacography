@@ -64,34 +64,6 @@ function run_vlc ()
 	/usr/bin/vlc -f "$1"
 }
 
-function ls_cleanup ()
-{
-	kill "$LS_PID"
-	rm -f "$HOME/Videos${LS_VID}.temp"
-	rm -f "$HOME/Videos${LS_VID}.mp4"
-}
-
-function run_ls ()
-{
-	[ -d "$HOME/Videos2" ] &&
-		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
-			LS_VID="2/$2"
-		}
-	[ -d "$HOME/Videos" ] &&
-		findmnt --target="$HOME/Videos/" -O rw > /dev/null && {
-			LS_VID="/$2"
-		}
-	trap ls_cleanup EXIT
-
-	python3-livestreamer --no-version-check "$1" best -o "$HOME/Videos${LS_VID}.temp" -f &
-	LS_PID=$!
-	wait $LS_PID
-	mv "$HOME/Videos${LS_VID}.temp" "$HOME/Videos${LS_VID}.mp4"
-	trap EXIT
-	unset LS_PID
-	unset LS_VID
-}
-
 function run_ydl ()
 {
 	local viddir
@@ -99,13 +71,9 @@ function run_ydl ()
 	local ydl_out
 	local i
 	i=0
-	if [ "$YOUTUBE_FUNC" == "YDL" ]; then
-		ydl_bin="youtube-dl"
-		ydl_out="$2.mp4"
-	else
-		ydl_bin="yt-dlp"
-		ydl_out="[%(channel)s] %(title)s [%(id)s].%(ext)s"
-	fi
+	ydl_bin="yt-dlp"
+	ydl_out="[%(channel)s] %(title)s [%(id)s].%(ext)s"
+
 	[ -d "$HOME/Videos2" ] &&
 		findmnt --target="$HOME/Videos2/" -O rw > /dev/null && {
 			viddir="$HOME/Videos2"
@@ -115,13 +83,25 @@ function run_ydl ()
 			viddir="$HOME/Videos"
 		}
 
-	echo flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"
+	if [ -z "${YDL_QUEUE}" -o 0 -eq $YDL_QUEUE ]; then
+		echo flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"
+		/usr/bin/flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"
+		[ -f "${viddir}/$2.part" -a ! -s "${viddir}/$2.part" ] && rm "${viddir}/$2.part"
+	else
+		[ -f "${viddir}/ydl.lock" ] && {
+			echo "queueing $1"
+			echo "$1" >> "${viddir}/ydl.lock"
+		} || {
+			echo "starting ydl queue with $1"
+			echo "$1" >> "${viddir}/ydl.lock"
+			while [ $i -ne $(stat -c %s "${viddir}/ydl.lock") ]; do
+				i=$(stat -c %s "${viddir}/ydl.lock")
+				$ydl_bin -o "${viddir}/${ydl_out}" --batch-file "${viddir}/ydl.lock" --download-archive "${viddir}/ydl.archive"
+			done
+			rm "${viddir}/ydl.lock" "${viddir}/ydl.archive"
+		}
+	fi
 
-	while ! /usr/bin/flock "${viddir}/$2.part" $ydl_bin -o "${viddir}/${ydl_out}" "$1"; do
-		i=$((i+1))
-		[ $i -ge ${3:-0} ] && break
-	done
-	[ -f "${viddir}/$2.part" -a ! -s "${viddir}/$2.part" ] && rm "${viddir}/$2.part"
 	true #at this point we are committed
 }
 
@@ -162,9 +142,9 @@ function run_youtube ()
     [ -e "$HOME/Videos2/$vid.temp" ] && return 0
     run_ls "$1" "$vid"
    elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
-    run_ydl "$1" "$vid" ${YDL_RETRIES}
+    run_ydl "$1" "$vid"
    elif [ "$YOUTUBE_FUNC" = "YTDLP" ]; then
-    run_ydl "$1" "$vid" ${YDL_RETRIES}
+    run_ydl "$1" "$vid"
    else
     run_vlc "$1"
    fi
@@ -315,17 +295,7 @@ function run_twitch ()
   elif [ -e "$HOME/Videos2/$vid.mkv" ]; then
    run_vlc "$HOME/Videos2/$vid.mkv"
   else
-   if [ "$YOUTUBE_FUNC" = "LS" ]; then
-    [ -e "$HOME/Videos/$vid.temp" ] && return 0
-    [ -e "$HOME/Videos2/$vid.temp" ] && return 0
-    run_ls "$1" "$vid"
-   elif [ "$YOUTUBE_FUNC" = "YDL" ]; then
-    run_ydl "$1" "$vid"
-   elif [ "$YOUTUBE_FUNC" = "YTDLP" ]; then
-    run_ydl "$1" "$vid"
-   else
-    run_vlc "$1"
-   fi
+   run_ydl "$1" "$vid"
   fi
  fi
 }
@@ -364,3 +334,4 @@ if [ "$1" = "-d" ]; then
 else
 	main "$@"
 fi
+
