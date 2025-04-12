@@ -11,6 +11,7 @@ if [ -f "$XDG_CONFIG_HOME/uri-open" ]; then
 elif [ -f "$HOME/.uri-open" ]; then
 	source "$HOME/.uri-open"
 fi
+[ -z "$TMPDIR" ] && TMPDIR="/tmp/"
 
 # List of test cases to run; keep default test last
 declare -r uri_test_list="podcast youtube peertube twitch default"
@@ -172,22 +173,23 @@ function test_podcast ()
 
 function wget_cleanup ()
 {
-	kill "$WGET_PID"
-	rm -f "$WGET_FILE.temp"
-	rm -f "$WGET_FILE"
+	kill ${WGET_PID}
+	rm -f "$WGET_TEMP"
 }
 
 function run_wget ()
 {
-	WGET_FILE="$2"
+	WGET_TEMP="$(mktemp --tmpdir="$TMPDIR")"
+	chmod a+r "$WGET_TEMP"
 	trap wget_cleanup EXIT
-	wget "$1" -O "$2.temp" &
+	wget "$1" -O "$WGET_TEMP" &
 	WGET_PID=$!
-	wait $wGET_PID
-	mv "$2.temp" "$2"
+	wait $WGET_PID
 	trap EXIT
+	sleep 1
+	[ -f "$WGET_TEMP" ] && mv "$WGET_TEMP" "$2"
 	unset WGET_PID
-	unset WGET_FILE
+	unset WGET_TEMP
 }
 
 function run_podcast ()
