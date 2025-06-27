@@ -1,4 +1,13 @@
-#!/bin/sh
+#!/bin/bash
+
+echo "Begin sync-videos-ods.sh"
+if [ ! -f Shares/boxy/MOVIES/VIDEOS.ods ]; then
+	# first attempt to access remote share may trigger the service to
+	# notice it is no longer connected
+	# wait a few seconds and then trigger the remount
+	/usr/bin/sleep $((RANDOM * 100/32767))
+	/usr/bin/systemctl --user start home-cbaker-Shares-boxy.mount
+fi
 
 if [ ! -f Shares/boxy/MOVIES/VIDEOS.ods ]; then
 	echo "Could not find VIDEOS.ods or boxy is unmounted"

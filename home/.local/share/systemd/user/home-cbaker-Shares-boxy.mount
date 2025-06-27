@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount boxy via sshfs
+Wants=network-online.target nss-lookup.target
+After=network-online.target nss-lookup.target
+
+[Mount]
+What=boxy:/srv/current//
+Where=/home/cbaker/Shares/boxy
+Type=sshfs
+TimeoutSec=5
+LazyUnmount=True

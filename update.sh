@@ -169,6 +169,8 @@ script_main ()
 		"$XDG_DATA_HOME/share/applications/gmail.desktop" \
 	 "home/.local/gmail.png" \
 		"$XDG_DATA_HOME/share/icons/hicolor/64x64/apps/gmail.png" \
+	 "home/.local/share/systemd/user" \
+		"$XDG_DATA_HOME/share/systemd/user" \
 	 "notes/linux_array_setup.txt"    "$HOME/linux_array_setup.txt" \
 	 "bin/dumptemps.sh"               "/usr/local/bin/dumptemps.sh" \
 	 "bin/folder-compare.sh"          "/usr/local/bin/folder-compare.sh" \

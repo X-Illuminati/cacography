@@ -1,6 +1,9 @@
 [Unit]
 Description=Sync Videos/VIDEOS.ods from boxy
-Requisite=home-cbaker-Shares-boxy.mount
+#Requires=home-cbaker-Shares-boxy.mount
+#After=home-cbaker-Shares-boxy.mount
+Wants=network-online.target nss-lookup.target
+After=network-online.target nss-lookup.target
 
 [Service]
 Type=simple
