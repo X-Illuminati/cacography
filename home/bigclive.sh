@@ -224,7 +224,7 @@ script_main() {
 				return 0
 			;;
 			-u|--update)
-				update_vids 10
+				update_vids 20
 				return $?
 			;;
 			-U|--full-update)

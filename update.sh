@@ -159,7 +159,7 @@ script_main ()
 	 "home/.config/OpenSCAD/OpenSCAD.conf" \
 		"$XDG_CONFIG_HOME/OpenSCAD/OpenSCAD.conf" \
 	 "home/.config/pianobar"          "$XDG_CONFIG_HOME/pianobar" \
-	 "home/.config/pianobar/yt-dlp/config" \
+	 "home/.config/yt-dlp/config" \
 		"$XDG_CONFIG_HOME/yt-dlp/config" \
 	 "home/.local/file-manager-actions/" \
 		"$XDG_DATA_HOME/share/file-manager/actions/" \

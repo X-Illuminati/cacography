@@ -138,3 +138,4 @@ fi
 [ -d "$XDG_RUNTIME_DIR/thumbnails" ] && [ -e ~/.cache/thumbnails ] && [ ! -h ~/.cache/thumbnails ] && rm -rf ~/.cache/thumbnails 
 [ -d "$XDG_RUNTIME_DIR/thumbnails" ] && [ ! -e ~/.cache/thumbnails ] && ln -s -t ~/.cache "$XDG_RUNTIME_DIR/thumbnails" || true
 
+mkdir -p /run/user/$UID/konsole
