@@ -39,6 +39,11 @@ youtube_getvid()
  /usr/bin/grep -q -E '^https?://(www\.)?youtube\.com/watch\?.*v=[[:alnum:]_-]{11}' <<< "$1" && {
    echo $1 | /usr/bin/sed -nre 's/^.*((\?v=)|(&v=))([[:alnum:]_-]{11}).*$/\4/p'
  } || {
+  #match http[s]://[www.]youtube.com/shorts/<video>
+  /usr/bin/grep -q -E '^https?://(www\.)?youtube\.com/shorts/[[:alnum:]_-]{11}' <<< "$1" && {
+   echo $1 | /usr/bin/sed -nre 's/^.*\/shorts\/([[:alnum:]_-]{11}).*$/\1/p'
+  }
+ } || {
   #match http[s]://youtu.be/<video>
   /usr/bin/grep -q -E '^https?://(www\.)?youtu\.be/[[:alnum:]_-]{11}' <<< "$1" && {
    echo $1 | /usr/bin/sed -nre 's/^.*\/([[:alnum:]_-]{11}).*$/\1/p'
