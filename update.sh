@@ -182,6 +182,7 @@ script_main ()
 	 "bin/mdadm-syslog-events"        "/usr/sbin/mdadm-syslog-events" \
 	 "bin/notify-all.sh"              "/usr/local/sbin/notify-all.sh" \
 	 "bin/binary_merge.py"            "/usr/local/bin/binary_merge.py" \
+	 "bin/alarm.sh"                   "/usr/local/bin/alarm.sh" \
 	 "cron.d/md-compare"              "/etc/cron.d/md-compare" \
 	 "cron.d/raid-check"              "/etc/cron.d/raid-check" \
 	 "cron.d/temp-report"             "/etc/cron.d/temp-report" \
