@@ -1,7 +1,9 @@
 # avoid high resolution or tricky codecs that don't always play well
--f '((bestvideo[format_note!=Premium][height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/bestvideo[format_note!=Premium][height<1080])+bestaudio/best[height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/best[height<1080]/best)'
+-f '((bestvideo[format_note!=Premium][height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/bestvideo[format_note!=Premium][height<1080][height>=480])+bestaudio/best[height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/best[height<1080][height>=480]/best)'
+
+#-f '((bestvideo[format_note!=Premium][height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/bestvideo[format_note!=Premium][height<1080])+bestaudio/best[height=1080][fps<35][vcodec!=?vp9][vcodec!^=?av01]/best[height<1080]/best)'
 
 # limit download rate and other parameters that might trigger bot detection
 -r 1.2M
 --retry-sleep 5
-
+--file-access-retries 5

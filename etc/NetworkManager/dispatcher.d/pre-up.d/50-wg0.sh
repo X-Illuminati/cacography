@@ -6,10 +6,17 @@ WG_INTERFACE_NAME="wg0"
 ENDPOINT_DNS_NAME="..."
 IPV4_INTERNAL_NET="192.168.x.0/24"
 IPV6_INTERNAL_NET="...::1/64"
+TMPSKIP="/tmp/${WG_INTERFACE_NAME}-route-script-keep"
 
 # bail-out if a different interface is being updated
 if [ "$DEVICE_IP_IFACE" != "$WG_INTERFACE_NAME" ]; then
         exit 0
+fi
+
+# bail-out if the user is providing their own bringup/teardown scripts
+if [ -e "$TMPSKIP" ]; then
+	echo "$(basename "$0"): $DEVICE_IP_IFACE pre-up script: skipping due to $TMPSKIP"
+	exit 0
 fi
 
 echo "$(basename "$0"): $DEVICE_IP_IFACE pre-up script executing"
@@ -17,6 +24,9 @@ echo "$(basename "$0"): $DEVICE_IP_IFACE pre-up script executing"
 #Helper Variables:
 TMPUP="/run/${WG_INTERFACE_NAME}-route-bringup"
 TMPDN="/run/${WG_INTERFACE_NAME}-route-teardown"
+
+# get the IP address of the endpoint
+# this is currently failing because it runs after DNS has already been routed through the WG interface
 if [ ! -z "$ENDPOINT_DNS_NAME" ]; then
 	echo "checking $ENDPOINT_DNS_NAME"
 	IPV4_ENDPOINT="$(host "${ENDPOINT_DNS_NAME}" | grep -m 1 "has address" | cut -d ' ' -f 4)"

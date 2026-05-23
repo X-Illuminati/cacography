@@ -91,9 +91,8 @@ file           | description
 ---------------|------------
 raid-check     | Modified configuration for the raid-check script to better support only checking one raid array at a time.
 mdadm.conf     | Configuration for mdadm to specify array setup and notification script.
-smb.conf       | Configuration for Samba.
-ssh_config     | Configuration for ssh clients.
-sshd_config    | Configuration for sshd server.
+smb.conf       | Configuration for Samba. Configuration for boxy -- review only.
+sshd_config    | Configuration for sshd server. Outdated -- for review only.
 NetworkManager | Helper scripts for NetworkManager (primarily to fixup routing tables for wireguard)
 
 ## TODO
