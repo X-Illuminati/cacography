@@ -15,11 +15,23 @@ alias sha='sha256sum'
 alias shac='sha256sum --check'
 alias rsha='find . ! -type d ! -name SHA256SUM -print0 | xargs -0 sha256sum'
 alias stats='jq -s "if length>1 then . else .[] end | { min:min, max:max, sum:add, count:length, avg: (add/length), median: (sort|.[(length/2|floor)]) }"'
-alias wifi='sudo rmmod ath10k_pci; sudo rmmod ath10k_core; sudo rmmod ath; sudo modprobe ath10k_pci'
+alias wifi='sudo rmmod iwlmvm; sudo rmmod iwlwifi; sudo modprobe iwlmvm iwlwifi; sudo rmmod ath10k_pci; sudo rmmod ath10k_core; sudo rmmod ath; sudo modprobe ath10k_pci'
 alias touchscreen='sudo sh -c "echo $(ls -1 /sys/bus/usb/devices/*/*04F3:2494*/modalias | grep -o "[[:xdigit:]:.]\{19\}" | head -n1) > /sys/bus/hid/drivers/hid-multitouch/bind"'
 alias notouchscreen='sudo sh -c "echo $(ls -1 /sys/bus/usb/devices/*/*04F3:2494*/modalias | grep -o "[[:xdigit:]:.]\{19\}" | head -n1) > /sys/bus/hid/drivers/hid-multitouch/unbind"'
 alias usbfix='sudo sh -c "echo \"3-2:1.0\" > /sys/bus/usb/drivers/hub/unbind; sleep 2; echo \"3-2:1.0\" > /sys/bus/usb/drivers/hub/bind"'
 alias monitor='journalctl -f -o cat'
+
+wg0-pre-up ()
+{
+ sudo DEVICE_IP_IFACE=wg0 /etc/NetworkManager/dispatcher.d/pre-up.d/50-wg0.sh wg0 pre-up && {
+  touch /tmp/wg0-route-script-keep
+  echo
+  echo "Ensure that the endpoint IP address is displayed above and is correct for your endpoint"
+  echo "Check the content of the route bringup script and that it includes the endpoint IP with metric 20:"
+  echo
+  cat /run/wg0-route-bringup
+ }
+}
 
 ydesc ()
 {
@@ -39,7 +51,7 @@ youtube_getvid()
  /usr/bin/grep -q -E '^https?://(www\.)?youtube\.com/watch\?.*v=[[:alnum:]_-]{11}' <<< "$1" && {
    echo $1 | /usr/bin/sed -nre 's/^.*((\?v=)|(&v=))([[:alnum:]_-]{11}).*$/\4/p'
  } || {
-  #match http[s]://[www.]youtube.com/shorts/<video>
+  #match http[s]://[www.]youtube.com/shorts/<video> match http[s]://youtu.be/<video>
   /usr/bin/grep -q -E '^https?://(www\.)?youtube\.com/shorts/[[:alnum:]_-]{11}' <<< "$1" && {
    echo $1 | /usr/bin/sed -nre 's/^.*\/shorts\/([[:alnum:]_-]{11}).*$/\1/p'
   }

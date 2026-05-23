@@ -226,6 +226,11 @@ function wget_cleanup ()
 	rm "$WGET_LOCKFILE"
 }
 
+
+# input params:
+# - URL to fetch
+# - desired output filename
+# - lockfile name
 function run_wget ()
 {
 	touch "$3" || return 1
@@ -243,6 +248,37 @@ function run_wget ()
 	unset WGET_PID
 	unset WGET_TEMP
 	unset WGET_LOCKFILE
+}
+
+# input params:
+# - original URL
+# - downloaded file path
+# output:
+# - formatted name from metadata
+function podcast_rename_helper ()
+{
+	local longname
+	longname=""
+
+	# special case handling for simplecast, which has a feed API
+	[[ "$1" =~ simplecast.*awEpisodeId=([0-9a-f-]+) ]] &&
+	{
+		# use curl to fetch information from feed API
+		# pipe to jq to create longname:
+		# .podcast.title - .number - .title
+		longname="$(curl --location "https://api.simplecast.com/episodes/${BASH_REMATCH[1]}" 2>/dev/null | jq -r "(.podcast.title+\"-\"+(.number|tostring)+\"-\"+.title)|trim")"
+	} || {
+		# use ffmpeg to read metadata information from the file
+		# pipe to jq to create longname from .format.tags:
+		# .track|.TDAT|.date - .artist|.album - .title (all fields optional)
+		longname="$(ffprobe -of json -show_format "$2" 2>/dev/null | jq -r ".format.tags | (if .track then .track+\"-\" else if .TDAT then .TDAT|.[:10]+\"-\" else if .date then .date|.[:10]+\"-\" else \"\" end end end)+(if .artist then .artist+\"-\" else if .album then .album+\"-\" else \"\" end end)+(if .title then .title else \"\" end)")"
+	}
+
+	longname="${longname//\?/}"
+	longname="${longname//\: /-}"
+	longname="${longname//\:/-}"
+	longname="${longname#-}"
+	echo "${longname}"
 }
 
 function run_podcast ()
@@ -275,13 +311,12 @@ function run_podcast ()
 			i="$HOME/Podcasts/${pod}${hash}.${ext}"
 			echo "Downloading $1 to $i"
 			run_wget "$1" "$i" "$HOME/Podcasts/${hash}.temp"
-			longname="$(ffprobe -of json -show_format "$i" 2>/dev/null | jq -r ".format.tags | (if .track then .track+\"-\" else if .TDAT then .TDAT|.[:10]+\"-\" else if .date then .date|.[:10]+\"-\" else \"\" end end end)+(if .artist then .artist+\"-\" else if .album then .album+\"-\" else \"\" end end)+(if .title then .title else \"\" end)")"
-			longname="${longname//\?/}"
-			longname="${longname//\:/-}"
-			longname="${longname#-}"
+			longname="$(podcast_rename_helper "$1" "$i")"
 			if [ -n "$longname" ]; then
 				echo "Renaming download to ${longname}${hash}.${ext}"
 				mv "$i" "$HOME/Podcasts/${longname}${hash}.${ext}"
+			else
+				echo "Downloaded to $i"
 			fi
 		fi
 	fi
