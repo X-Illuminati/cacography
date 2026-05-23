@@ -1,8 +1,10 @@
 #!/bin/bash
 
-[ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
-[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
-[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+[ -z "$PLAYER" ] && {
+	PLAYER="/usr/bin/vlc"
+	[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
+	[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+}
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-qi"
 [ -z "$FILTER" ] && FILTER="*.mp4 *.mkv"
 VIDSTRING="Randi-Scandi"
@@ -100,7 +102,6 @@ named_vid() {
 		if [ -z "$filenames" ]; then
 			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
-		#echo "filenames=" "$filenames"
 	fi
 	if [ -z "$filenames" ]; then
 		echo "$1: not found"

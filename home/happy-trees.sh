@@ -1,8 +1,10 @@
 #!/bin/bash
 
-[ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
-[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
-[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+[ -z "$PLAYER" ] && {
+	PLAYER="/usr/bin/vlc"
+	[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
+	[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+}
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-bobross/The Joy of Painting/Full Episodes"
 [ -z "$FILTER" ] && FILTER="*.mp4 *.mkv *.webm"
 VIDSTRING="Happy-Trees"
@@ -62,7 +64,7 @@ play() {
 		echo "${BOLD}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${OFFBOLD}"
 		"$PLAYER" $PLAYEROPT $DESCOPT "$(cat "$bname.description")" "$1" 2>/dev/null
 	else
-		"$PLAYER" $PLAYEROPT "$1"
+		"$PLAYER" $PLAYEROPT "$1" 2>/dev/null
 	fi
 }
 
@@ -100,7 +102,6 @@ named_vid() {
 		if [ -z "$filenames" ]; then
 			filenames="$(echo "$filelist" | grep -s -i "$1" | cut -d ":" -f 2-)"
 		fi
-		echo "filenames=" "$filenames"
 	fi
 	if [ -z "$filenames" ]; then
 		echo "$1: not found"

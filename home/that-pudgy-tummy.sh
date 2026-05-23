@@ -1,8 +1,10 @@
 #!/bin/bash
 
-[ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
-[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --sub-language=en"
-[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+[ -z "$PLAYER" ] && {
+	PLAYER="/usr/bin/vlc"
+	[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
+	[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+}
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-aria"
 [ -z "$FILTER" ] && FILTER="-1 *.mkv *.mp4 */*.mkv */*.m4v"
 VIDSTRING=""

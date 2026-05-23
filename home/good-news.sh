@@ -1,8 +1,10 @@
 #!/bin/bash
 
-[ -z "$PLAYER" ] && PLAYER="/usr/bin/vlc"
-[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
-[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+[ -z "$PLAYER" ] && {
+	PLAYER="/usr/bin/vlc"
+	[ -z "$PLAYEROPT" ] && PLAYEROPT="-q -f --play-and-exit --no-spu --sub-language=en"
+	[ -z "$DESCOPT" ] && DESCOPT="--meta-description"
+}
 [ -z "$VIDDIR" ] && VIDDIR="$HOME/viddir-futurama"
 [ -z "$FILTER" ] && FILTER="*.m4v"
 VIDSTRING="Good news, everyone!"
